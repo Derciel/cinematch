@@ -231,21 +231,21 @@ const moviesList = await fetchRealStreamingProviders();
           <!-- Filtro por Duração e Época -->
           <div class="form-group">
             <label class="form-label">Duração & Época</label>
-            <div class="filters-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="filters-grid">
               <div class="filter-wrapper">
-                <label class="form-label-sub" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.35rem; display: block;">Duração</label>
-                <select id="filter-duration" style="width: 100%; padding: 0.75rem; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: #fff; cursor: pointer; font-size: 0.85rem; font-weight: 600; outline: none; transition: border-color 0.2s ease;">
+                <label class="filter-label">Duração</label>
+                <select id="filter-duration">
                   <option value="all">Qualquer Duração</option>
                   <option value="short">Curtos (menos de 1h50)</option>
                   <option value="long">Longos (1h50 ou mais)</option>
                 </select>
               </div>
               <div class="filter-wrapper">
-                <label class="form-label-sub" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.35rem; display: block;">Época</label>
-                <select id="filter-era" style="width: 100%; padding: 0.75rem; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: #fff; cursor: pointer; font-size: 0.85rem; font-weight: 600; outline: none; transition: border-color 0.2s ease;">
+                <label class="filter-label">Época</label>
+                <select id="filter-era">
                   <option value="all">Qualquer Época</option>
                   <option value="modern">Modernos (2015+)</option>
-                  <option value="classic">Clássicos / Nostálgicos (< 2015)</option>
+                  <option value="classic">Clássicos (&lt; 2015)</option>
                 </select>
               </div>
             </div>
