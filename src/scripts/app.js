@@ -1,19 +1,20 @@
 // CineMatch - Lógica Interativa do Sistema
 
+// Atribuir base de dados do escopo do window (carregado via Astro build/fallback)
+const MOVIE_DATABASE = window.MOVIE_DATABASE || [];
+
 // Normalização do ecossistema de streaming do casal
-// Eles têm Prime Video, Max e On-Demand (que contém todos os filmes).
-// Filtramos para destacar Prime Video e Max quando disponíveis, e adicionamos sempre "On-Demand".
-if (typeof MOVIE_DATABASE !== 'undefined') {
+if (MOVIE_DATABASE && MOVIE_DATABASE.length > 0) {
   MOVIE_DATABASE.forEach(movie => {
     const customPlatforms = [];
-    if (movie.platforms.includes("Prime Video")) {
-      customPlatforms.push("Prime Video");
+    movie.platforms.forEach(p => {
+      if (!customPlatforms.includes(p)) {
+        customPlatforms.push(p);
+      }
+    });
+    if (!customPlatforms.includes("On-Demand")) {
+      customPlatforms.push("On-Demand");
     }
-    if (movie.platforms.includes("Max") || movie.platforms.includes("HBO Max")) {
-      customPlatforms.push("Max");
-    }
-    // Adicionar On-Demand como opção garantida para todos os filmes
-    customPlatforms.push("On-Demand");
     movie.platforms = customPlatforms;
   });
 }
@@ -35,6 +36,7 @@ const state = {
   // Estado das Rodadas
   currentTurn: "A", // "A" ou "B"
   matches: [],      // Matches históricos salvos no localStorage
+  diary: [],        // Diário de Encontros salvos no localStorage
   syncedPartnerA: false, // Flag se os likes do Parceiro A vieram de sincronização externa
   
   // Controle de Cartas Ativas
@@ -49,12 +51,14 @@ const SWIPE_SUPER_THRESHOLD = 100; // px vertical para superlike
 // Inicialização
 document.addEventListener("DOMContentLoaded", () => {
   loadMatchesFromStorage();
+  loadDiaryFromStorage();
   initSetupUI();
   initNavigation();
   initButtons();
   initKeyboardShortcuts();
   initNFCSync();
   initWinesScreen();
+  initDiaryUI();
   updateAnniversaryCounter();
   initSplashScreen();
   initMusicToggle();
@@ -70,7 +74,7 @@ function initNavigation() {
     link.addEventListener("click", (e) => {
       const targetScreen = link.getAttribute("data-screen");
       
-      // Se tentar navegar sem ter configurado o jogo, força voltar ao setup (exceto se for para a aba de ideias)
+      // Se tentar navegar sem ter configurado o jogo, força voltar ao setup (exceto se for para a aba de ideias, vinhos ou diário)
       if (targetScreen === "play-screen" && state.moviesToSwipe.length === 0) {
         if (state.gameMode === "split") {
           switchScreen("split-screen-play");
@@ -90,10 +94,13 @@ function initNavigation() {
     });
   });
 
-  document.getElementById("header-logo").addEventListener("click", () => {
-    switchScreen("setup-screen");
-    updateActiveNavLink("");
-  });
+  const logo = document.getElementById("header-logo");
+  if (logo) {
+    logo.addEventListener("click", () => {
+      switchScreen("setup-screen");
+      updateActiveNavLink("");
+    });
+  }
 }
 
 function switchScreen(screenId) {
@@ -104,9 +111,11 @@ function switchScreen(screenId) {
   if (target) {
     target.classList.add("active");
     
-    // Lógicas específicas ao carregar certas telas
+    // Lógicas específicas ao carregar certas de telas
     if (screenId === "history-screen") {
       renderMatchesGrid();
+    } else if (screenId === "diary-screen") {
+      renderDiaryTimeline();
     }
   }
 }
@@ -157,30 +166,70 @@ function initSetupUI() {
   });
 
   // Botão Iniciar
-  document.getElementById("start-match-btn").addEventListener("click", startCineMatch);
+  const startBtn = document.getElementById("start-match-btn");
+  if (startBtn) {
+    startBtn.addEventListener("click", startCineMatch);
+  }
+}
+
+// Parser auxiliar de duração ("2h 15m" -> 135)
+function parseDurationToMinutes(durationStr) {
+  if (!durationStr) return 120;
+  const match = durationStr.match(/(?:(\d+)h)?\s*(?:(\d+)m)?/);
+  if (!match) return 120;
+  const hours = parseInt(match[1] || 0);
+  const minutes = parseInt(match[2] || 0);
+  return hours * 60 + minutes;
 }
 
 function startCineMatch() {
   const nameA = document.getElementById("partner-a-input").value.trim();
   const nameB = document.getElementById("partner-b-input").value.trim();
   
-  state.partnerA = nameA || "Parceiro A";
-  state.partnerB = nameB || "Parceiro B";
+  state.partnerA = nameA || "Derci";
+  state.partnerB = nameB || "Isa";
   
-  // Filtrar filmes baseado nos gêneros selecionados
-  // Um filme é selecionado se contiver pelo menos um dos gêneros favoritos de hoje
+  // Guardar nomes locais
+  localStorage.setItem("partnerA", state.partnerA);
+  localStorage.setItem("partnerB", state.partnerB);
+
+  // Carregar filtros selecionados
+  const durationFilter = document.getElementById("filter-duration")?.value || "all";
+  const eraFilter = document.getElementById("filter-era")?.value || "all";
+
+  // Filtrar filmes baseado nos gêneros selecionados, duração e época
   state.moviesToSwipe = MOVIE_DATABASE.filter(movie => {
-    return movie.genres.some(genre => state.selectedGenres.includes(genre));
+    // 1. Gênero
+    const genreMatch = movie.genres.some(genre => state.selectedGenres.includes(genre));
+    if (!genreMatch) return false;
+
+    // 2. Duração
+    if (durationFilter === "short") {
+      const minutes = parseDurationToMinutes(movie.duration);
+      if (minutes >= 110) return false; // menos de 1h50m (110 mins)
+    } else if (durationFilter === "long") {
+      const minutes = parseDurationToMinutes(movie.duration);
+      if (minutes < 110) return false; // 1h50m ou mais
+    }
+
+    // 3. Época
+    if (eraFilter === "modern") {
+      if (movie.year < 2015) return false;
+    } else if (eraFilter === "classic") {
+      if (movie.year >= 2015) return false;
+    }
+
+    return true;
   });
   
   // Embaralhar aleatoriamente os filmes selecionados para dinâmica de jogo
   state.moviesToSwipe.sort(() => Math.random() - 0.5);
   
   if (state.moviesToSwipe.length === 0) {
-    alert("Nenhum filme disponível para estes gêneros. Selecione outros!");
+    alert("Nenhum filme disponível para os filtros selecionados. Altere a duração ou época e tente novamente!");
     return;
   }
-
+  
   // Se já veio sincronizado do parceiro A, mantém os likes dele e inicia no turno B
   if (state.syncedPartnerA) {
     state.likesB.clear();
@@ -245,14 +294,15 @@ function startCineMatch() {
 // ==================== CARD RENDERING ====================
 function renderDeck(deckContainerId, side) {
   const container = document.getElementById(deckContainerId);
+  if (!container) return;
   
-  // Limpar cartas anteriores (mantendo apenas transições se houver)
+  // Limpar cartas anteriores
   const previousCards = container.querySelectorAll(".movie-card");
   previousCards.forEach(c => c.remove());
 
   const transitionOverlay = container.querySelector(".round-transition-overlay");
   
-  // Inserir cards de trás para a frente (para que o primeiro da lista fique no topo)
+  // Inserir cards de trás para a frente
   const listToRender = [...state.moviesToSwipe];
   
   if (listToRender.length === 0) {
@@ -264,7 +314,6 @@ function renderDeck(deckContainerId, side) {
     const card = document.createElement("div");
     card.className = "movie-card glass";
     card.setAttribute("data-id", movie.id);
-    // Z-index progressivo
     card.style.zIndex = index + 1;
     
     // Formatar plataforma HTML
@@ -325,17 +374,13 @@ function renderDeck(deckContainerId, side) {
 }
 
 function renderEmptyDeck(container) {
-  // Se for o painel principal
-  const isSplitSide = container.closest(".split-side");
   let actionBtnText = "Ir para Matches";
   let actionFn = () => switchScreen("history-screen");
 
   if (state.gameMode === "turn" && state.currentTurn === "A") {
-    // Se for fim do turno de A no modo turnos
     actionBtnText = `Passar para ${state.partnerB}`;
     actionFn = () => triggerTurnTransition();
   } else if (state.gameMode === "turn" && state.currentTurn === "B") {
-    // Turno B acabou
     actionBtnText = "Ver Matches";
     actionFn = () => finishTurnBasedMatch();
   }
@@ -364,20 +409,16 @@ function attachDragEvents(card, side) {
   let currentY = 0;
   let isDragging = false;
   
-  // Elementos internos dos carimbos (stamps)
   const stampLike = card.querySelector(".card-stamp-like");
   const stampDislike = card.querySelector(".card-stamp-dislike");
   const stampSuper = card.querySelector(".card-stamp-super");
 
-  // Handlers comuns
   const dragStart = (e) => {
-    // Ignorar cliques normais em botões ou links internos se houver
     if (e.target.closest("button") || e.target.closest("a")) return;
     
     isDragging = true;
     card.classList.add("swiping");
     
-    // Coordenadas iniciais
     startX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
     startY = e.type.includes("touch") ? e.touches[0].clientY : e.clientY;
   };
@@ -385,33 +426,25 @@ function attachDragEvents(card, side) {
   const dragMove = (e) => {
     if (!isDragging) return;
     
-    // Coordenadas atuais
     currentX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
     currentY = e.type.includes("touch") ? e.touches[0].clientY : e.clientY;
     
-    // Diferencial
     const deltaX = currentX - startX;
     const deltaY = currentY - startY;
     
-    // Calcular rotação proporcional ao deslocamento lateral
     const rotation = deltaX / 15;
     
-    // Mover o elemento fisicamente com aceleração por hardware (3D)
     card.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) rotate(${rotation}deg)`;
     
-    // Opacidade dos stamps baseada no deslocamento
     if (deltaX > 20) {
-      // Like (Gostei) -> Direita
       stampLike.style.opacity = Math.min(deltaX / SWIPE_THRESHOLD, 0.9);
       stampDislike.style.opacity = 0;
       stampSuper.style.opacity = 0;
     } else if (deltaX < -20) {
-      // Dislike (Nope) -> Esquerda
       stampDislike.style.opacity = Math.min(Math.abs(deltaX) / SWIPE_THRESHOLD, 0.9);
       stampLike.style.opacity = 0;
       stampSuper.style.opacity = 0;
     } else if (deltaY < -20 && Math.abs(deltaX) < 40) {
-      // Superlike -> Cima
       stampSuper.style.opacity = Math.min(Math.abs(deltaY) / SWIPE_SUPER_THRESHOLD, 0.9);
       stampLike.style.opacity = 0;
       stampDislike.style.opacity = 0;
@@ -430,40 +463,31 @@ function attachDragEvents(card, side) {
     const deltaX = currentX - startX;
     const deltaY = currentY - startY;
     
-    // Decisão final baseada no arraste
     if (deltaX > SWIPE_THRESHOLD) {
-      // Swipe Direita (LIKE)
       swipeCard(card, "right", side);
     } else if (deltaX < -SWIPE_THRESHOLD) {
-      // Swipe Esquerda (DISLIKE)
       swipeCard(card, "left", side);
     } else if (deltaY < -SWIPE_SUPER_THRESHOLD && Math.abs(deltaX) < SWIPE_THRESHOLD / 2) {
-      // Swipe Cima (SUPERLIKE)
       swipeCard(card, "up", side);
     } else {
-      // Resetar posição
       card.style.transform = "";
       stampLike.style.opacity = 0;
       stampDislike.style.opacity = 0;
       stampSuper.style.opacity = 0;
     }
     
-    // Zerar deltas
     startX = startY = currentX = currentY = 0;
   };
 
-  // Eventos de Mouse
   card.addEventListener("mousedown", dragStart);
   window.addEventListener("mousemove", dragMove);
   window.addEventListener("mouseup", dragEnd);
   
-  // Eventos de Toque (Mobile)
   card.addEventListener("touchstart", dragStart, { passive: true });
   card.addEventListener("touchmove", dragMove, { passive: true });
   card.addEventListener("touchend", dragEnd, { passive: true });
 }
 
-// Executa a animação de deslizar e processa o voto
 function swipeCard(card, direction, side) {
   card.classList.add("dismissed");
   const movieId = card.getAttribute("data-id");
@@ -472,7 +496,6 @@ function swipeCard(card, direction, side) {
   let yMove = 0;
   let rotate = 0;
   
-  // Direções físicas de saída
   if (direction === "right") {
     xMove = window.innerWidth;
     rotate = 35;
@@ -484,19 +507,15 @@ function swipeCard(card, direction, side) {
     rotate = 5;
   }
   
-  // Aplicar transformação final de saída com aceleração por hardware (3D)
   card.style.transform = `translate3d(${xMove}px, ${yMove}px, 0) rotate(${rotate}deg)`;
   card.style.opacity = "0";
 
-  // Remover carta física do DOM após a transição terminar
   setTimeout(() => {
     card.remove();
-    // Registrar o voto
     registerVote(movieId, direction, side);
   }, 400);
 }
 
-// Registrar o Voto no State
 function registerVote(movieId, direction, side) {
   const isSuper = (direction === "up");
   const isLike = (direction === "right" || isSuper);
@@ -512,7 +531,6 @@ function registerVote(movieId, direction, side) {
       state.likesB.add(movieId);
       if (isSuper) state.superLikesB.add(movieId);
       
-      // Se o parceiro A já curtiu este filme, comemora o Match instantaneamente!
       if (state.likesA.has(movieId)) {
         triggerMatchCelebration(movieId, "Modo Turnos");
       }
@@ -535,27 +553,25 @@ function registerVote(movieId, direction, side) {
   }
 }
 
-// Verificar se as cartas do deck atual acabaram
 function checkDeckProgress(side) {
   if (side === "A") {
     const deck = document.getElementById("cards-deck");
-    const activeCards = deck.querySelectorAll(".movie-card");
+    const activeCards = deck ? deck.querySelectorAll(".movie-card") : [];
     if (activeCards.length === 0) {
       triggerTurnTransition();
     }
   } else if (side === "B") {
     const deck = document.getElementById("cards-deck");
-    const activeCards = deck.querySelectorAll(".movie-card");
+    const activeCards = deck ? deck.querySelectorAll(".movie-card") : [];
     if (activeCards.length === 0) {
       finishTurnBasedMatch();
     }
   } else if (side.startsWith("split")) {
     const deckA = document.getElementById("cards-deck-a");
     const deckB = document.getElementById("cards-deck-b");
-    const cardsA = deckA.querySelectorAll(".movie-card").length;
-    const cardsB = deckB.querySelectorAll(".movie-card").length;
+    const cardsA = deckA ? deckA.querySelectorAll(".movie-card").length : 0;
+    const cardsB = deckB ? deckB.querySelectorAll(".movie-card").length : 0;
     
-    // Se ambos acabaram, ir para histórico/matches
     if (cardsA === 0 && cardsB === 0) {
       setTimeout(() => {
         switchScreen("history-screen");
@@ -564,78 +580,90 @@ function checkDeckProgress(side) {
   }
 }
 
-// Transição no Modo Turnos (Bloqueio "Passa o celular")
 function triggerTurnTransition() {
   state.currentTurn = "B";
   
-  document.getElementById("turn-indicator-name").textContent = `Turno de ${state.partnerB}`;
-  document.getElementById("turn-indicator-name").className = "player-turn-indicator secondary";
-  document.getElementById("turn-indicator-name").style.color = "var(--secondary)";
-  document.getElementById("turn-indicator-name").style.boxShadow = "var(--shadow-neon-secondary)";
-  document.getElementById("turn-indicator-name").style.border = "1px solid rgba(139, 92, 246, 0.2)";
-  document.getElementById("turn-indicator-name").style.background = "rgba(139, 92, 246, 0.08)";
+  const turnName = document.getElementById("turn-indicator-name");
+  if (turnName) {
+    turnName.textContent = `Turno de ${state.partnerB}`;
+    turnName.className = "player-turn-indicator secondary";
+    turnName.style.color = "var(--secondary)";
+    turnName.style.boxShadow = "var(--shadow-neon-secondary)";
+    turnName.style.border = "1px solid rgba(139, 92, 246, 0.2)";
+    turnName.style.background = "rgba(139, 92, 246, 0.08)";
+  }
   
-  // Alterar texto instrucional
-  document.getElementById("transition-instruction-text").textContent = `Passe o dispositivo para ${state.partnerB}. Os palpites de ${state.partnerA} foram ocultados por segurança!`;
+  const instrText = document.getElementById("transition-instruction-text");
+  if (instrText) {
+    instrText.textContent = `Passe o dispositivo para ${state.partnerB}. Os palpites de ${state.partnerA} foram ocultados por segurança!`;
+  }
   
-  // Ativar overlay de bloqueio
   const overlay = document.getElementById("round-transition-screen");
-  overlay.classList.add("active");
+  if (overlay) overlay.classList.add("active");
 }
 
 // ==================== INTERATIVE BUTTONS CONTROLS ====================
 function initButtons() {
-  // Controles de Ação de Botões (Interface Regular)
-  document.getElementById("action-dislike").addEventListener("click", () => {
-    triggerButtonSwipe("left");
-  });
-  document.getElementById("action-like").addEventListener("click", () => {
-    triggerButtonSwipe("right");
-  });
-  document.getElementById("action-superlike").addEventListener("click", () => {
-    triggerButtonSwipe("up");
-  });
+  const dislikeBtn = document.getElementById("action-dislike");
+  if (dislikeBtn) dislikeBtn.addEventListener("click", () => triggerButtonSwipe("left"));
+  
+  const likeBtn = document.getElementById("action-like");
+  if (likeBtn) likeBtn.addEventListener("click", () => triggerButtonSwipe("right"));
+  
+  const superBtn = document.getElementById("action-superlike");
+  if (superBtn) superBtn.addEventListener("click", () => triggerButtonSwipe("up"));
 
-  // Botão "Pronto para rodada B"
-  document.getElementById("next-turn-ready-btn").addEventListener("click", () => {
-    document.getElementById("round-transition-screen").classList.remove("active");
-    // Renderiza novamente o deck de cartas para o Turno B
-    renderDeck("cards-deck", "B");
-  });
+  const readyBtn = document.getElementById("next-turn-ready-btn");
+  if (readyBtn) {
+    readyBtn.addEventListener("click", () => {
+      const transScreen = document.getElementById("round-transition-screen");
+      if (transScreen) transScreen.classList.remove("active");
+      renderDeck("cards-deck", "B");
+    });
+  }
 
-  // Botões de Ação na Tela Dividida
-  document.getElementById("action-split-dislike-a").addEventListener("click", () => triggerSplitButtonSwipe("left", "split-A"));
-  document.getElementById("action-split-like-a").addEventListener("click", () => triggerSplitButtonSwipe("right", "split-A"));
-  document.getElementById("action-split-dislike-b").addEventListener("click", () => triggerSplitButtonSwipe("left", "split-B"));
-  document.getElementById("action-split-like-b").addEventListener("click", () => triggerSplitButtonSwipe("right", "split-B"));
+  const sDislikeA = document.getElementById("action-split-dislike-a");
+  if (sDislikeA) sDislikeA.addEventListener("click", () => triggerSplitButtonSwipe("left", "split-A"));
+  
+  const sLikeA = document.getElementById("action-split-like-a");
+  if (sLikeA) sLikeA.addEventListener("click", () => triggerSplitButtonSwipe("right", "split-A"));
+  
+  const sDislikeB = document.getElementById("action-split-dislike-b");
+  if (sDislikeB) sDislikeB.addEventListener("click", () => triggerSplitButtonSwipe("left", "split-B"));
+  
+  const sLikeB = document.getElementById("action-split-like-b");
+  if (sLikeB) sLikeB.addEventListener("click", () => triggerSplitButtonSwipe("right", "split-B"));
 
-  // Botões da Tela de Celebração de Match
-  document.getElementById("match-keep-swiping-btn").addEventListener("click", () => {
-    document.getElementById("match-celebration-screen").classList.remove("active");
-    stopConfetti();
-  });
+  const keepSwiping = document.getElementById("match-keep-swiping-btn");
+  if (keepSwiping) {
+    keepSwiping.addEventListener("click", () => {
+      const celScreen = document.getElementById("match-celebration-screen");
+      if (celScreen) celScreen.classList.remove("active");
+      stopConfetti();
+    });
+  }
 
-  document.getElementById("match-watch-now-btn").addEventListener("click", () => {
-    const movieTitle = document.getElementById("match-movie-title").textContent;
-    // Abre pesquisa do google indicando onde assistir ao filme
-    window.open(`https://www.google.com/search?q=onde+assistir+filme+${encodeURIComponent(movieTitle)}`, "_blank");
-  });
+  const watchNow = document.getElementById("match-watch-now-btn");
+  if (watchNow) {
+    watchNow.addEventListener("click", () => {
+      const movieTitle = document.getElementById("match-movie-title").textContent;
+      window.open(`https://www.google.com/search?q=onde+assistir+filme+${encodeURIComponent(movieTitle)}`, "_blank");
+    });
+  }
 
-  // Botão Roleta
-  document.getElementById("spin-wheel-btn").addEventListener("click", spinRouletteWheel);
+  const spinBtn = document.getElementById("spin-wheel-btn");
+  if (spinBtn) spinBtn.addEventListener("click", spinRouletteWheel);
 }
 
-// Simular o swipe de carta através dos botões circulares da interface principal
 function triggerButtonSwipe(direction) {
   const deck = document.getElementById("cards-deck");
+  if (!deck) return;
   const cards = Array.from(deck.querySelectorAll(".movie-card"));
   
   if (cards.length > 0) {
-    // A última carta no DOM é a do topo (z-index maior)
     const topCard = cards[cards.length - 1];
-    const side = state.currentTurn; // "A" ou "B"
+    const side = state.currentTurn;
     
-    // Aplicar classe e carimbo apropriado antes de sair
     const stampName = direction === "right" ? "like" : (direction === "left" ? "dislike" : "super");
     const stamp = topCard.querySelector(`.card-stamp-${stampName}`);
     if (stamp) stamp.style.opacity = "0.9";
@@ -644,10 +672,10 @@ function triggerButtonSwipe(direction) {
   }
 }
 
-// Simular o swipe na Tela Dividida
 function triggerSplitButtonSwipe(direction, side) {
   const containerId = side === "split-A" ? "cards-deck-a" : "cards-deck-b";
   const deck = document.getElementById(containerId);
+  if (!deck) return;
   const cards = Array.from(deck.querySelectorAll(".movie-card"));
   
   if (cards.length > 0) {
@@ -663,33 +691,30 @@ function triggerSplitButtonSwipe(direction, side) {
 // ==================== SHORTCUTS DE TECLADO ====================
 function initKeyboardShortcuts() {
   document.addEventListener("keydown", (e) => {
-    // Apenas rodar atalhos se a tela estiver visível
-    const splitPlayVisible = document.getElementById("split-screen-play").classList.contains("active");
-    const playVisible = document.getElementById("play-screen").classList.contains("active");
-    const matchCelebrationActive = document.getElementById("match-celebration-screen").classList.contains("active");
+    const splitPlayEl = document.getElementById("split-screen-play");
+    const playEl = document.getElementById("play-screen");
+    const matchEl = document.getElementById("match-celebration-screen");
     
-    // Ignorar se estiver em algum input (ex: tela de setup)
-    if (document.activeElement.tagName === "INPUT") return;
+    const splitPlayVisible = splitPlayEl && splitPlayEl.classList.contains("active");
+    const playVisible = playEl && playEl.classList.contains("active");
+    const matchCelebrationActive = matchEl && matchEl.classList.contains("active");
     
-    // Fechar tela de match com Esc ou Espaço
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+    
     if (matchCelebrationActive && (e.key === "Escape" || e.key === " ")) {
-      document.getElementById("match-celebration-screen").classList.remove("active");
+      if (matchEl) matchEl.classList.remove("active");
       stopConfetti();
       return;
     }
 
     if (splitPlayVisible) {
-      // Split Screen Controles de Teclado
       switch (e.key.toLowerCase()) {
-        // Player A (Esquerda): Q / W
         case "q":
           triggerSplitButtonSwipe("left", "split-A");
           break;
         case "w":
           triggerSplitButtonSwipe("right", "split-A");
           break;
-          
-        // Player B (Direita): O / P
         case "o":
           triggerSplitButtonSwipe("left", "split-B");
           break;
@@ -698,7 +723,6 @@ function initKeyboardShortcuts() {
           break;
       }
     } else if (playVisible) {
-      // Turn-based Controles de Teclado
       switch (e.key) {
         case "ArrowLeft":
           triggerButtonSwipe("left");
@@ -715,38 +739,27 @@ function initKeyboardShortcuts() {
 }
 
 // ==================== LÓGICA DE MATCHES E CRUZAMENTO ====================
-
-// Checa match instantâneo no modo Tela Dividida
 function checkInstantSplitMatch(movieId) {
   if (state.likesA.has(movieId) && state.likesB.has(movieId)) {
-    // É um MATCH!
     triggerMatchCelebration(movieId, "Tela Dividida");
   }
 }
 
-// Finaliza a rodada por turnos e cruza os dados
 function finishTurnBasedMatch() {
-  // Achar interseção de likes dos dois
   const commonLikes = [...state.likesA].filter(id => state.likesB.has(id));
   
   if (commonLikes.length > 0) {
-    // Salvar todos os matches
     commonLikes.forEach(id => {
       saveMatch(id, "Turnos");
     });
-    
-    // Celebrar com o primeiro match encontrado
     triggerMatchCelebration(commonLikes[0], "Modo Turnos");
   } else {
-    // Sem matches comuns
-    alert("Infelizmente não tivemos nenhum match de filmes em comum nessa rodada. Que tal tentar novamente ativando outros gêneros?");
+    alert("Infelizmente não tivemos nenhum match de filmes em comum nessa rodada. Que tal tentar novamente ativando outros gêneros ou modificando a duração?");
     switchScreen("setup-screen");
   }
 }
 
-// Salvar um Match Histórico
 function saveMatch(movieId, modeName) {
-  // Evitar duplicados
   if (state.matches.some(m => m.movieId === movieId)) return;
   
   const movie = MOVIE_DATABASE.find(m => m.id === movieId);
@@ -768,36 +781,49 @@ function saveMatch(movieId, modeName) {
 }
 
 function triggerMatchCelebration(movieId, modeName) {
-  // Salvar no storage
   saveMatch(movieId, modeName);
   
   const movie = MOVIE_DATABASE.find(m => m.id === movieId);
   if (!movie) return;
 
-  // Atualizar dados da tela de match
-  document.getElementById("match-congrats-names").textContent = `${state.partnerA} e ${state.partnerB} combinaram!`;
-  document.getElementById("match-movie-poster").src = movie.poster;
-  document.getElementById("match-movie-poster").alt = `Poster do filme ${movie.title}`;
-  document.getElementById("match-movie-title").textContent = movie.title;
-  document.getElementById("match-movie-year").textContent = movie.year;
-  document.getElementById("match-movie-duration").textContent = movie.duration;
-  document.getElementById("match-movie-rating").textContent = `⭐ ${movie.rating.toFixed(1)}`;
-  document.getElementById("match-movie-synopsis").textContent = movie.synopsis;
+  const congrats = document.getElementById("match-congrats-names");
+  if (congrats) congrats.textContent = `${state.partnerA} e ${state.partnerB} combinaram!`;
   
-  // Plataformas
+  const poster = document.getElementById("match-movie-poster");
+  if (poster) {
+    poster.src = movie.poster;
+    poster.alt = `Poster do filme ${movie.title}`;
+  }
+  
+  const title = document.getElementById("match-movie-title");
+  if (title) title.textContent = movie.title;
+  
+  const mYear = document.getElementById("match-movie-year");
+  if (mYear) mYear.textContent = movie.year;
+  
+  const mDur = document.getElementById("match-movie-duration");
+  if (mDur) mDur.textContent = movie.duration;
+  
+  const mRat = document.getElementById("match-movie-rating");
+  if (mRat) mRat.textContent = `⭐ ${movie.rating.toFixed(1)}`;
+  
+  const syn = document.getElementById("match-movie-synopsis");
+  if (syn) syn.textContent = movie.synopsis;
+  
   const platDisplay = document.getElementById("match-movie-platforms");
-  platDisplay.innerHTML = movie.platforms.map(p => `<span class="platform-tag">${p}</span>`).join("");
+  if (platDisplay) {
+    platDisplay.innerHTML = movie.platforms.map(p => `<span class="platform-tag">${p}</span>`).join("");
+  }
   
-  // Ativar overlay
-  document.getElementById("match-celebration-screen").classList.add("active");
+  const celScreen = document.getElementById("match-celebration-screen");
+  if (celScreen) celScreen.classList.add("active");
   
-  // Iniciar Confetes
   startConfetti();
 }
 
-// RENDERIZAR MATCHES SALVOS
 function renderMatchesGrid() {
   const grid = document.getElementById("matches-display-grid");
+  if (!grid) return;
   const rouletteSection = document.getElementById("roulette-section");
   
   if (state.matches.length === 0) {
@@ -811,16 +837,17 @@ function renderMatchesGrid() {
         <p>Comecem a jogar para encontrar filmes em comum!</p>
       </div>
     `;
-    rouletteSection.style.display = "none";
+    if (rouletteSection) rouletteSection.style.display = "none";
     return;
   }
 
-  // Exibir a roleta caso tenhamos pelo menos 2 matches
   if (state.matches.length >= 2) {
-    rouletteSection.style.display = "flex";
-    drawWheel();
+    if (rouletteSection) {
+      rouletteSection.style.display = "flex";
+      drawWheel();
+    }
   } else {
-    rouletteSection.style.display = "none";
+    if (rouletteSection) rouletteSection.style.display = "none";
   }
 
   grid.innerHTML = "";
@@ -830,6 +857,12 @@ function renderMatchesGrid() {
     
     const genresBadges = match.genres.map(g => `<span class="match-history-genre-badge">${g}</span>`).join("");
     
+    // Verificar se o match já está no diário
+    const isMatchedInDiary = state.diary.some(d => d.movieId === match.movieId);
+    const diaryButtonHTML = isMatchedInDiary 
+      ? `<span style="font-size: 0.72rem; color: #10b981; font-weight: 700; display: flex; align-items: center; gap: 0.2rem;">✓ Assistido ❤️</span>`
+      : `<button class="btn-secondary btn-diary" onclick="openDiaryModal('${match.movieId}')" style="padding: 0.35rem 0.65rem; font-size: 0.72rem; display: flex; align-items: center; gap: 0.25rem; margin-top: 0.5rem; background:rgba(217, 70, 239, 0.08); border-color: rgba(217, 70, 239, 0.2); font-weight:700;">📝 Registrar Encontro</button>`;
+
     card.innerHTML = `
       <img class="match-history-img" src="${match.poster}" alt="Poster de ${match.movieTitle}">
       <div class="match-history-details">
@@ -842,14 +875,16 @@ function renderMatchesGrid() {
             ${genresBadges}
           </div>
         </div>
-        <div class="match-history-actions">
-          <span class="match-history-type">${match.gameMode}</span>
-          <button class="btn-icon-link" onclick="deleteMatch('${match.movieId}')" aria-label="Remover match">
-            <!-- Trash SVG Icon -->
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
-            </svg>
-          </button>
+        <div class="match-history-actions" style="display:flex; flex-direction:column; align-items: flex-start; justify-content: flex-end; gap:0.25rem;">
+          <div style="display:flex; width: 100%; justify-content: space-between; align-items: center;">
+            <span class="match-history-type" style="font-size:0.65rem;">${match.gameMode}</span>
+            <button class="btn-icon-link" onclick="deleteMatch('${match.movieId}')" aria-label="Remover match">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
+              </svg>
+            </button>
+          </div>
+          ${diaryButtonHTML}
         </div>
       </div>
     `;
@@ -859,14 +894,13 @@ function renderMatchesGrid() {
 
 // Remover Match
 window.deleteMatch = function(movieId) {
-  if (confirm("Deseja realmente remover este filme da lista de matches?")) {
+  if (confirm("Remover este match do histórico?")) {
     state.matches = state.matches.filter(m => m.movieId !== movieId);
     saveMatchesToStorage();
     renderMatchesGrid();
   }
 };
 
-// LocalStorage helpers
 function saveMatchesToStorage() {
   localStorage.setItem("cinematch_matches", JSON.stringify(state.matches));
 }
@@ -876,19 +910,202 @@ function loadMatchesFromStorage() {
   if (data) {
     try {
       state.matches = JSON.parse(data);
-    } catch (e) {
+    } catch (err) {
       state.matches = [];
     }
   }
 }
 
-// ==================== ANIMAÇÃO DE CONFETES EM CANVAS ====================
+// ==================== LÓGICA DO DIÁRIO ("NOSSAS MEMÓRIAS") ====================
+function loadDiaryFromStorage() {
+  const data = localStorage.getItem("cinematch_diary");
+  if (data) {
+    try {
+      state.diary = JSON.parse(data);
+    } catch (err) {
+      state.diary = [];
+    }
+  }
+}
+
+function saveDiaryToStorage() {
+  localStorage.setItem("cinematch_diary", JSON.stringify(state.diary));
+}
+
+function initDiaryUI() {
+  const closeBtn = document.getElementById("btn-close-diary-modal");
+  if (closeBtn) closeBtn.addEventListener("click", closeDiaryModal);
+  
+  const form = document.getElementById("diary-form");
+  if (form) form.addEventListener("submit", saveDiaryEntry);
+
+  // Setup click listeners para os corações de avaliação
+  const hearts = document.querySelectorAll("#heart-rating-container .heart-star");
+  hearts.forEach(heart => {
+    heart.addEventListener("click", () => {
+      const ratingValue = parseInt(heart.getAttribute("data-rating"));
+      document.getElementById("diary-rating-value").value = ratingValue;
+      
+      // Destacar corações selecionados
+      hearts.forEach(h => {
+        const val = parseInt(h.getAttribute("data-rating"));
+        if (val <= ratingValue) {
+          h.classList.add("selected");
+        } else {
+          h.classList.remove("selected");
+        }
+      });
+    });
+  });
+}
+
+window.openDiaryModal = function(movieId) {
+  const movie = MOVIE_DATABASE.find(m => m.id === movieId) || state.matches.find(m => m.movieId === movieId);
+  if (!movie) return;
+
+  const title = movie.title || movie.movieTitle;
+
+  document.getElementById("diary-movie-id").value = movieId;
+  document.getElementById("diary-modal-movie-title").textContent = `Filme: ${title}`;
+  
+  // Data padrão: hoje
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("diary-date").value = today;
+  
+  // Resetar avaliação para 5 corações
+  document.getElementById("diary-rating-value").value = "5";
+  const hearts = document.querySelectorAll("#heart-rating-container .heart-star");
+  hearts.forEach(h => h.classList.add("selected"));
+
+  // Resetar notas
+  document.getElementById("diary-notes").value = "";
+
+  // Abrir modal
+  const modal = document.getElementById("diary-modal");
+  if (modal) modal.classList.add("active");
+};
+
+function closeDiaryModal() {
+  const modal = document.getElementById("diary-modal");
+  if (modal) modal.classList.remove("active");
+}
+
+function saveDiaryEntry(e) {
+  e.preventDefault();
+
+  const movieId = document.getElementById("diary-movie-id").value;
+  const dateVal = document.getElementById("diary-date").value;
+  const ratingVal = parseInt(document.getElementById("diary-rating-value").value);
+  const notesVal = document.getElementById("diary-notes").value.trim();
+
+  const movie = MOVIE_DATABASE.find(m => m.id === movieId) || state.matches.find(m => m.movieId === movieId);
+  if (!movie) return;
+
+  const title = movie.title || movie.movieTitle;
+  const poster = movie.poster;
+
+  // Criar ou atualizar
+  const existingIndex = state.diary.findIndex(d => d.movieId === movieId);
+  
+  // Format data
+  const formattedDate = dateVal.split("-").reverse().join("/");
+
+  const diaryEntry = {
+    movieId: movieId,
+    movieTitle: title,
+    poster: poster,
+    watchDate: formattedDate,
+    watchDateRaw: dateVal,
+    rating: ratingVal,
+    notes: notesVal
+  };
+
+  if (existingIndex > -1) {
+    state.diary[existingIndex] = diaryEntry;
+  } else {
+    state.diary.unshift(diaryEntry);
+  }
+
+  // Ordenar timeline por data (mais recente no topo)
+  state.diary.sort((a, b) => new Date(b.watchDateRaw) - new Date(a.watchDateRaw));
+
+  saveDiaryToStorage();
+  closeDiaryModal();
+  renderDiaryTimeline();
+  renderMatchesGrid();
+}
+
+function renderDiaryTimeline() {
+  const timeline = document.getElementById("diary-timeline");
+  if (!timeline) return;
+
+  if (state.diary.length === 0) {
+    timeline.innerHTML = `
+      <div class="diary-empty-state">
+        <p>Vocês ainda não registraram encontros na linha do tempo. Marquem um filme como assistido nos Matches! 📝❤️</p>
+      </div>
+    `;
+    return;
+  }
+
+  timeline.innerHTML = "";
+  state.diary.forEach(entry => {
+    const item = document.createElement("div");
+    item.className = "diary-item";
+
+    const ratingHearts = "❤️".repeat(entry.rating);
+
+    item.innerHTML = `
+      <div class="diary-item-node"></div>
+      <div class="diary-card glass">
+        <img class="diary-card-img" src="${entry.poster}" alt="Poster de ${entry.movieTitle}">
+        <div class="diary-card-body">
+          <div>
+            <div class="diary-card-header">
+              <h3 class="diary-card-title">${entry.movieTitle}</h3>
+              <span class="diary-card-date">${entry.watchDate}</span>
+            </div>
+            <div class="diary-card-rating">
+              ${ratingHearts}
+            </div>
+            <p class="diary-card-notes">
+              "${entry.notes}"
+            </p>
+          </div>
+          <div style="display:flex; justify-content: flex-end; margin-top:0.75rem;">
+            <button class="btn-icon-link" onclick="deleteDiaryEntry('${entry.movieId}')" style="font-size:0.75rem; display:flex; align-items:center; gap:0.25rem;" aria-label="Remover do diário">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
+              </svg>
+              Excluir Registro
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    timeline.appendChild(item);
+  });
+}
+
+window.deleteDiaryEntry = function(movieId) {
+  if (confirm("Remover este registro do diário de encontros?")) {
+    state.diary = state.diary.filter(d => d.movieId !== movieId);
+    saveDiaryToStorage();
+    renderDiaryTimeline();
+    renderMatchesGrid();
+  }
+};
+
+// ==================== CONFETES E ANIMAÇÕES ====================
+let confettiCanvas = null;
+let confettiCtx = null;
 let confettiInterval = null;
 let confettiParticles = [];
-const confettiCanvas = document.getElementById("confetti-canvas");
-const confettiCtx = confettiCanvas.getContext("2d");
 
 function resizeConfettiCanvas() {
+  confettiCanvas = document.getElementById("confetti-canvas");
+  if (!confettiCanvas) return;
+  confettiCtx = confettiCanvas.getContext("2d");
   confettiCanvas.width = window.innerWidth;
   confettiCanvas.height = window.innerHeight;
 }
@@ -930,6 +1147,8 @@ class ConfettiParticle {
 
 function startConfetti() {
   resizeConfettiCanvas();
+  if (!confettiCanvas) return;
+  confettiCtx = confettiCanvas.getContext("2d");
   confettiParticles = Array.from({ length: 120 }, () => new ConfettiParticle());
   
   if (confettiInterval) cancelAnimationFrame(confettiInterval);
@@ -944,8 +1163,6 @@ function startConfetti() {
   }
   
   animate();
-  
-  // Parar confetes automaticamente depois de 8 segundos para performance
   setTimeout(stopConfetti, 8000);
 }
 
@@ -954,25 +1171,25 @@ function stopConfetti() {
     cancelAnimationFrame(confettiInterval);
     confettiInterval = null;
   }
-  confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  if (confettiCanvas) {
+    confettiCtx = confettiCanvas.getContext("2d");
+    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  }
 }
 
-
-// ==================== RODA DA FORTUNA (ROBÚSTA) ====================
+// ==================== RODA DA FORTUNA ====================
 let isSpinning = false;
-let currentRotation = 0;
 
 function drawWheel() {
   const canvas = document.getElementById("wheel-canvas");
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
   const radius = canvas.width / 2;
   
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  const numSegments = Math.min(state.matches.length, 8); // Máximo de 8 fatias na roda
+  const numSegments = Math.min(state.matches.length, 8);
   const angle = (2 * Math.PI) / numSegments;
-  
-  // Cores alternadas para a roleta
   const colors = ["#d946ef", "#8b5cf6", "#6366f1", "#4f46e5", "#0284c7", "#0369a1", "#059669", "#047857"];
 
   for (let i = 0; i < numSegments; i++) {
@@ -980,7 +1197,6 @@ function drawWheel() {
     const startAngle = i * angle;
     const endAngle = startAngle + angle;
     
-    // Fatia
     ctx.beginPath();
     ctx.moveTo(radius, radius);
     ctx.arc(radius, radius, radius - 6, startAngle, endAngle);
@@ -991,7 +1207,6 @@ function drawWheel() {
     ctx.strokeStyle = "rgba(19, 25, 38, 0.4)";
     ctx.stroke();
     
-    // Texto do filme na fatia
     ctx.save();
     ctx.translate(radius, radius);
     ctx.rotate(startAngle + angle / 2);
@@ -999,7 +1214,6 @@ function drawWheel() {
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 9px 'Plus Jakarta Sans'";
     
-    // Truncar o título se for muito longo
     let title = movie.movieTitle;
     if (title.length > 14) title = title.substring(0, 12) + "...";
     
@@ -1016,38 +1230,30 @@ function spinRouletteWheel() {
   const btn = document.getElementById("spin-wheel-btn");
   const popup = document.getElementById("wheel-result-popup");
   
+  if (!wheel || !btn || !popup) return;
+
   btn.disabled = true;
   popup.classList.remove("active");
   
-  // Limitar a roleta às primeiras 8 opções renderizadas
   const numSegments = Math.min(state.matches.length, 8);
   const selectedIndex = Math.floor(Math.random() * numSegments);
-  
   const angle = 360 / numSegments;
-  // O ponteiro aponta para o topo (270 graus).
-  // A fatia sorteada deve parar apontando para o topo.
-  // Rotacionar de volta: - (index * fatia_angle + meia_fatia_angle) + rotações extras
   const targetRotation = 360 * 6 - (selectedIndex * angle) - (angle / 2) + 270;
   
-  // Aplicar rotação com animação CSS
   wheel.style.transform = `rotate(${targetRotation}deg)`;
   
-  // Tocar o som/feedback visual quando parar (4 segundos combinando com transition-slow do CSS)
   setTimeout(() => {
     isSpinning = false;
     btn.disabled = false;
     
     const chosenMovie = state.matches[selectedIndex];
     
-    // Mostrar PopUp
     popup.textContent = chosenMovie.movieTitle;
     popup.classList.add("active");
     
-    // Pequena comemoração com confete
     startConfetti();
     setTimeout(stopConfetti, 2500);
     
-    // Perguntar se quer ver o filme
     setTimeout(() => {
       if (confirm(`A roleta escolheu: "${chosenMovie.movieTitle}"! Gostariam de ver os detalhes deste filme agora?`)) {
         triggerMatchCelebration(chosenMovie.movieId, "Sorteio da Roleta");
@@ -1057,7 +1263,6 @@ function spinRouletteWheel() {
 }
 
 // ==================== LÓGICA DE SINCRONIZAÇÃO E NFC ====================
-
 let ndefReader = null;
 
 function initNFCSync() {
@@ -1071,7 +1276,6 @@ function initNFCSync() {
   if (nfcWriteBtn) nfcWriteBtn.addEventListener("click", handleNFCWrite);
   if (linkShareBtn) linkShareBtn.addEventListener("click", handleLinkShare);
 
-  // Verificar se há dados de sincronização na URL
   checkURLSearchParams();
 }
 
@@ -1087,7 +1291,6 @@ function checkURLSearchParams() {
       state.partnerA = decodeURIComponent(nameA);
       state.syncedPartnerA = true;
 
-      // Preencher o input do parceiro A na interface
       const partnerAInput = document.getElementById("partner-a-input");
       if (partnerAInput) {
         partnerAInput.value = state.partnerA;
@@ -1176,7 +1379,6 @@ function parseNFCContent(text) {
     state.partnerA = decodeURIComponent(namePart);
     state.syncedPartnerA = true;
 
-    // Atualizar UI
     const partnerAInput = document.getElementById("partner-a-input");
     if (partnerAInput) {
       partnerAInput.value = state.partnerA;
@@ -1185,7 +1387,6 @@ function parseNFCContent(text) {
       partnerAInput.style.border = "1px solid #10b981";
     }
 
-    // Atualizar a URL no navegador sem recarregar a página para resiliência a atualizações de tela
     const shareUrl = `${window.location.origin}${window.location.pathname}?likesA=${[...state.likesA].join(',')}&nameA=${encodeURIComponent(state.partnerA)}`;
     window.history.replaceState(null, "", shareUrl);
 
@@ -1217,7 +1418,6 @@ async function handleNFCWrite() {
 }
 
 function handleLinkShare() {
-  // Gerar o link de sincronização
   const origin = window.location.origin;
   const path = window.location.pathname;
   const likesStr = [...state.likesA].join(',');
@@ -1276,7 +1476,6 @@ function handleLinkRead() {
         partnerAInput.style.border = "1px solid #10b981";
       }
 
-      // Atualizar a URL no navegador sem recarregar a página para resiliência a atualizações de tela
       const shareUrl = `${window.location.origin}${window.location.pathname}?likesA=${[...state.likesA].join(',')}&nameA=${encodeURIComponent(state.partnerA)}`;
       window.history.replaceState(null, "", shareUrl);
 
@@ -1290,7 +1489,6 @@ function handleLinkRead() {
 }
 
 // ==================== LÓGICA DA CARTA DE VINHOS ====================
-
 const WINE_PAIRINGS = {
   popcorn: {
     emoji: "🍿",
@@ -1364,7 +1562,6 @@ function initWinesScreen() {
     });
   });
 
-  // Renderizar o primeiro emparelhamento (Pipoca) por padrão
   renderWinePairing("popcorn");
 }
 
@@ -1375,7 +1572,6 @@ function renderWinePairing(key) {
   const data = WINE_PAIRINGS[key];
   if (!data) return;
 
-  // Efeito de fade suave na transição
   card.style.opacity = "0";
   card.style.transform = "scale(0.96)";
   card.style.transition = "opacity 0.2s ease, transform 0.2s ease";
@@ -1396,10 +1592,20 @@ function renderWinePairing(key) {
         ${data.desc}
       </p>
       
-      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 0.75rem 1rem; border-radius: 12px; width: 100%; text-align: left;">
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 0.75rem 1rem; border-radius: 12px; width: 100%; text-align: left; margin-bottom: 1.25rem;">
         <p style="font-size: 0.75rem; color: var(--text-main); line-height: 1.4;">
           💡 <strong>Dica de Serviço:</strong> ${data.tip}
         </p>
+      </div>
+
+      <!-- Atalho de Delivery (Botões iFood / Rappi) -->
+      <div class="delivery-shortcuts" style="display: flex; gap: 0.75rem; justify-content: center; width: 100%; margin-top: 0.5rem; flex-wrap: wrap;">
+        <a href="https://www.ifood.com.br/busca?q=${encodeURIComponent(data.food)}" target="_blank" class="btn-delivery btn-ifood" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #ea1d2c; color: #fff; padding: 0.65rem 1.25rem; border-radius: 12px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease; flex: 1; min-width: 140px; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.25);">
+          <span style="font-size: 1.1rem;">🛵</span> Pedir no iFood
+        </a>
+        <a href="https://www.rappi.com.br/busca?q=${encodeURIComponent(data.food)}" target="_blank" class="btn-delivery btn-rappi" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #ff5a5f; color: #fff; padding: 0.65rem 1.25rem; border-radius: 12px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease; flex: 1; min-width: 140px; box-shadow: 0 4px 12px rgba(255, 90, 95, 0.25);">
+          <span style="font-size: 1.1rem;">🍔</span> Pedir no Rappi
+        </a>
       </div>
     `;
     card.style.opacity = "1";
@@ -1408,12 +1614,10 @@ function renderWinePairing(key) {
 }
 
 // ==================== CONTADOR DE ANIVERSÁRIO ====================
-
 function updateAnniversaryCounter() {
   const counterEl = document.getElementById("time-together-counter");
   if (!counterEl) return;
 
-  // IMPORTANTE: Defina abaixo a data e horário exatos em que vocês se conheceram
   const startYear = 2026; 
   const startDate = new Date(startYear, 3, 9, 0, 0, 0); // 9 de Abril de 2026 às 00:00:00 (Mês 3 em JS, já que Janeiro é 0)
   const now = new Date();
@@ -1426,7 +1630,7 @@ function updateAnniversaryCounter() {
   let minutes = now.getMinutes() - startDate.getMinutes();
   let seconds = now.getSeconds() - startDate.getSeconds();
 
-  // Ajustes de tempo de trás para frente (segundos -> minutos -> horas -> dias -> meses)
+  // Ajustes de tempo
   if (seconds < 0) {
     seconds += 60;
     minutes--;
@@ -1442,14 +1646,13 @@ function updateAnniversaryCounter() {
   if (days < 0) {
     const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
     days += prevMonthLastDay;
-    // Removido months-- para adequar à contagem humana do casal (quase 3 meses)
   }
   if (months < 0) {
     months += 12;
     years--;
   }
 
-  // 1. Versão compacta para o banner da página de Setup (sem sobrecarregar o espaço)
+  // 1. Versão compacta para o banner da página de Setup
   let compactParts = [];
   if (years > 0) compactParts.push(`${years} ${years === 1 ? 'ano' : 'anos'}`);
   if (months > 0) compactParts.push(`${months} ${months === 1 ? 'mês' : 'meses'}`);
@@ -1458,7 +1661,7 @@ function updateAnniversaryCounter() {
   let compactTime = compactParts.length === 2 ? compactParts.join(" e ") : compactParts.join(", ");
   counterEl.textContent = `Nos conhecemos há ${compactTime} • Desde 09/04/${startYear}`;
 
-  // 2. Versão completa em tempo real para o Splash Screen (anos, meses, dias, horas, minutos e segundos)
+  // 2. Versão completa em tempo real para o Splash Screen
   let fullParts = [];
   if (years > 0) {
     fullParts.push(`${years} ${years === 1 ? 'ano' : 'anos'}`);
@@ -1482,13 +1685,11 @@ function updateAnniversaryCounter() {
     fullTime = fullParts[0];
   }
 
-  // Atualizar o contador no Splash Screen
   const splashCounterEl = document.getElementById("splash-time-counter");
   if (splashCounterEl) {
     splashCounterEl.textContent = fullTime;
   }
 
-  // Atualizar os nomes no Splash Screen com dados do localStorage ou padrões
   const partnerAName = localStorage.getItem("partnerA") || "Derci";
   const partnerBName = localStorage.getItem("partnerB") || "Isa";
   const splashCoupleNames = document.getElementById("splash-couple-names");
@@ -1507,10 +1708,8 @@ function initSplashScreen() {
   if (!btn || !splash) return;
 
   btn.addEventListener("click", () => {
-    // Transição suave de fade-out
     splash.classList.add("fade-out");
 
-    // Iniciar a música automaticamente com autoplay
     const player = document.getElementById("bg-music-player");
     const iconOn = document.getElementById("music-icon-on");
     const iconOff = document.getElementById("music-icon-off");
@@ -1535,13 +1734,11 @@ function initMusicToggle() {
 
   btn.addEventListener("click", () => {
     if (isMusicPlaying) {
-      // Mutar/Parar
       player.src = "";
       iconOn.style.display = "none";
       iconOff.style.display = "block";
       isMusicPlaying = false;
     } else {
-      // Tocar
       player.src = "https://www.youtube.com/embed/Rk3P1kLp0aE?autoplay=1&loop=1&playlist=Rk3P1kLp0aE";
       iconOn.style.display = "block";
       iconOff.style.display = "none";

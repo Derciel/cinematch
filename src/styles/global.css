@@ -1712,3 +1712,228 @@ footer {
 .photo-partner-b {
   object-position: top !important;
 }
+
+/* --- DIARY SCREEN & TIMELINE STYLES --- */
+.diary-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.diary-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.diary-subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2.5rem;
+}
+.diary-timeline {
+  position: relative;
+  border-left: 2px solid rgba(217, 70, 239, 0.15);
+  margin-left: 1.5rem;
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+.diary-item {
+  position: relative;
+}
+.diary-item-node {
+  position: absolute;
+  left: -2.75rem;
+  top: 0.25rem;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 4px solid var(--bg-dark);
+  box-shadow: 0 0 10px var(--primary);
+  z-index: 2;
+}
+.diary-card {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.diary-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(217, 70, 239, 0.25);
+}
+.diary-card-img {
+  width: 100px;
+  height: 140px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+.diary-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+}
+.diary-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.diary-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.diary-card-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  background: rgba(255,255,255,0.04);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.diary-card-rating {
+  color: #fbbf24;
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+}
+.diary-card-notes {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  background: rgba(255,255,255,0.01);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.03);
+  margin-top: 0.5rem;
+}
+.diary-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+
+/* Modal form rating stars */
+.heart-rating {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+.heart-star {
+  font-size: 1.5rem;
+  cursor: pointer;
+  filter: grayscale(100%);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.heart-star.selected {
+  filter: grayscale(0%);
+  transform: scale(1.15);
+}
+.heart-star:hover {
+  transform: scale(1.25);
+}
+
+/* Custom styles for select elements in Setup */
+#setup-form select {
+  font-family: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.25rem;
+}
+#setup-form select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(217, 70, 239, 0.15);
+}
+
+/* Modal Overlay Styles for Diary */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 7, 12, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  z-index: 1100;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+.modal-overlay.active {
+  display: flex;
+}
+.modal-content {
+  max-width: 460px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: var(--shadow-lg), var(--shadow-neon-primary);
+  animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalPop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  color: #fff;
+}
+.modal-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+.form-group textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-color);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.88rem;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+.form-group textarea:focus {
+  border-color: var(--primary);
+}
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+.modal-actions button {
+  padding: 0.65rem 1.5rem;
+  font-size: 0.9rem;
+}

@@ -1,13 +1,82 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CineMatch - Escolha o Filme Ideal Para o Casal</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+---
+import Layout from '../layouts/Layout.astro';
+import { MOVIE_DATABASE } from '../data/movies.js';
 
+// Função para buscar providers reais do TMDB (JustWatch) para todos os filmes
+async function fetchRealStreamingProviders() {
+  const tmdbApiKey = import.meta.env.TMDB_API_KEY || process.env.TMDB_API_KEY;
+  if (!tmdbApiKey) {
+    console.log("Nenhuma chave TMDB_API_KEY encontrada. Usando plataformas locais de fallback.");
+    return MOVIE_DATABASE;
+  }
+
+  console.log("TMDB_API_KEY encontrada! Carregando plataformas em tempo real do TMDb...");
+  const updatedMovies = [];
+
+  for (const movie of MOVIE_DATABASE) {
+    try {
+      // 1. Buscar o ID do filme pelo título e ano
+      const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&query=${encodeURIComponent(movie.title)}&year=${movie.year}&language=pt-BR`;
+      const searchRes = await fetch(searchUrl);
+      const searchData = await searchRes.json();
+      
+      if (searchData.results && searchData.results.length > 0) {
+        const tmdbId = searchData.results[0].id;
+        
+        // 2. Buscar os watch providers (JustWatch) para o Brasil (BR)
+        const providersUrl = `https://api.themoviedb.org/3/movie/${tmdbId}/watch/providers?api_key=${tmdbApiKey}`;
+        const providersRes = await fetch(providersUrl);
+        const providersData = await providersRes.json();
+        
+        const brProviders = providersData.results?.BR;
+        const platforms = [];
+        
+        if (brProviders) {
+          // Flatrate (streaming por assinatura)
+          if (brProviders.flatrate) {
+            brProviders.flatrate.forEach(p => {
+              const name = p.provider_name.toLowerCase();
+              if (name.includes("netflix") && !platforms.includes("Netflix")) {
+                platforms.push("Netflix");
+              } else if ((name.includes("max") || name.includes("hbo")) && !platforms.includes("Max")) {
+                platforms.push("Max");
+              } else if ((name.includes("prime") || name.includes("amazon")) && !platforms.includes("Prime Video")) {
+                platforms.push("Prime Video");
+              } else if (name.includes("disney") && !platforms.includes("Disney+")) {
+                platforms.push("Disney+");
+              } else if (name.includes("apple") && !platforms.includes("Apple TV+")) {
+                platforms.push("Apple TV+");
+              } else if (name.includes("globoplay") && !platforms.includes("Globoplay")) {
+                platforms.push("Globoplay");
+              }
+            });
+          }
+        }
+        
+        // Se não encontrar nenhuma plataforma de streaming padrão, marca como On-Demand
+        if (platforms.length === 0) {
+          platforms.push("On-Demand");
+        }
+        
+        updatedMovies.push({
+          ...movie,
+          platforms: platforms
+        });
+      } else {
+        updatedMovies.push(movie);
+      }
+    } catch (err) {
+      console.error(`Erro ao buscar providers para ${movie.title}:`, err);
+      updatedMovies.push(movie);
+    }
+  }
+  return updatedMovies;
+}
+
+const moviesList = await fetchRealStreamingProviders();
+---
+
+<Layout>
   <!-- 0. ROMANTIC SPLASH SCREEN -->
   <div id="romantic-splash" class="splash-overlay">
     <div class="splash-content glass">
@@ -60,9 +129,10 @@
     </div>
     
     <nav style="display: flex; align-items: center; gap: 1rem;">
-      <ul class="nav-links" id="nav-menu">
+      <ul class="nav-links" id="nav-menu" style="display: none;">
         <li><a class="nav-link active" data-screen="play-screen">Jogar</a></li>
         <li><a class="nav-link" data-screen="history-screen">Matches</a></li>
+        <li><a class="nav-link" data-screen="diary-screen">Memórias</a></li>
         <li><a class="nav-link" data-screen="ideas-screen">Ideias de Encontros</a></li>
         <li><a class="nav-link" data-screen="wines-screen">Vinhos</a></li>
       </ul>
@@ -126,7 +196,6 @@
             <label class="form-label">Gêneros Favoritos de Hoje</label>
             <div class="genre-grid">
               <div class="genre-pill selected" data-genre="Ficção Científica">
-                <!-- Planet / SciFi SVG -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="12" cy="12" r="6" stroke-width="2"/>
                   <ellipse cx="12" cy="12" rx="10" ry="3" transform="rotate(-15 12 12)" stroke-width="2"/>
@@ -134,7 +203,6 @@
                 <span>Sci-Fi</span>
               </div>
               <div class="genre-pill selected" data-genre="Terror">
-                <!-- Ghost / Horror SVG -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 2C7.5 2 4 5.5 4 10v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-4.5-3.5-8-8-8z" stroke-width="2"/>
                   <circle cx="9" cy="10" r="1.5" fill="currentColor"/>
@@ -144,19 +212,40 @@
                 <span>Terror</span>
               </div>
               <div class="genre-pill selected" data-genre="Ação">
-                <!-- Explosion / Action SVG -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke-width="2" stroke-linejoin="round"/>
                 </svg>
                 <span>Ação</span>
               </div>
               <div class="genre-pill selected" data-genre="Aventura">
-                <!-- Compass / Adventure SVG -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="12" cy="12" r="9" stroke-width="2"/>
                   <path d="M16.2 7.8L12.8 12.8L7.8 16.2L11.2 11.2L16.2 7.8Z" stroke-width="2" fill="currentColor"/>
                 </svg>
                 <span>Aventura</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtro por Duração e Época -->
+          <div class="form-group">
+            <label class="form-label">Duração & Época</label>
+            <div class="filters-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="filter-wrapper">
+                <label class="form-label-sub" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.35rem; display: block;">Duração</label>
+                <select id="filter-duration" style="width: 100%; padding: 0.75rem; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: #fff; cursor: pointer; font-size: 0.85rem; font-weight: 600; outline: none; transition: border-color 0.2s ease;">
+                  <option value="all">Qualquer Duração</option>
+                  <option value="short">Curtos (menos de 1h50)</option>
+                  <option value="long">Longos (1h50 ou mais)</option>
+                </select>
+              </div>
+              <div class="filter-wrapper">
+                <label class="form-label-sub" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.35rem; display: block;">Época</label>
+                <select id="filter-era" style="width: 100%; padding: 0.75rem; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: #fff; cursor: pointer; font-size: 0.85rem; font-weight: 600; outline: none; transition: border-color 0.2s ease;">
+                  <option value="all">Qualquer Época</option>
+                  <option value="modern">Modernos (2015+)</option>
+                  <option value="classic">Clássicos / Nostálgicos (< 2015)</option>
+                </select>
               </div>
             </div>
           </div>
@@ -166,7 +255,6 @@
             <label class="form-label">Modo de Jogo</label>
             <div class="mode-grid">
               <div class="mode-option selected" data-mode="turn">
-                <!-- Mobile swap SVG -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <rect x="5" y="2" width="14" height="20" rx="3" stroke-width="2"/>
                   <line x1="10" y1="20" x2="14" y2="20" stroke-width="2" stroke-linecap="round"/>
@@ -178,7 +266,6 @@
               </div>
               
               <div class="mode-option" data-mode="split">
-                <!-- Split Screen SVG -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <rect x="2" y="3" width="20" height="18" rx="2" stroke-width="2"/>
                   <line x1="12" y1="3" x2="12" y2="21" stroke-width="2"/>
@@ -377,7 +464,22 @@
       </div>
     </section>
 
-    <!-- 5. IDEAS & CHALLENGES SCREEN -->
+    <!-- 5. DIARY / MEMORIES SCREEN -->
+    <section id="diary-screen" class="screen">
+      <div class="diary-container glass">
+        <h2 class="diary-title">Nossas Memórias ❤️</h2>
+        <p class="diary-subtitle">Nossa linha do tempo dos encontros e filmes que já assistimos juntos.</p>
+        
+        <div id="diary-timeline" class="diary-timeline">
+          <!-- Dinamicamente preenchido -->
+          <div class="diary-empty-state">
+            <p>Vocês ainda não registraram memórias. Registrem um match na aba de Matches! 📝</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. IDEAS & CHALLENGES SCREEN -->
     <section id="ideas-screen" class="screen">
       <h2 class="section-title">Ideias de Encontros de Cinema</h2>
       <p class="section-subtitle">Combine os filmes com lanches, desafios e decorações temáticas para tornar a noite inesquecível!</p>
@@ -512,7 +614,7 @@
           <button type="button" class="btn-secondary" data-food="chocolate" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🍫 Chocolate</button>
         </div>
         
-        <div class="wine-result-card glass" id="wine-result-card" style="display: flex; flex-direction: column; align-items: center; max-width: 500px; margin: 0 auto; padding: 2rem; border-radius: 18px; border: 1.5px solid rgba(212, 175, 55, 0.2); background: rgba(8, 11, 17, 0.5);">
+        <div class="wine-result-card glass" id="wine-result-card" style="display: flex; flex-direction: column; align-items: center; max-width: 500px; margin: 0 auto; padding: 2rem; border-radius: 18px; border: 1.5px solid rgba(212, 175, 55, 0.2); background: rgba(8, 11, 17, 0.55);">
           <!-- Carregado via Javascript -->
         </div>
       </div>
@@ -601,9 +703,8 @@
 
   </main>
 
-  <!-- 6. FULLSCREEN MATCH CELEBRATION OVERLAY -->
+  <!-- 8. FULLSCREEN MATCH CELEBRATION OVERLAY -->
   <section class="match-overlay" id="match-celebration-screen">
-    <!-- Confetti canvas overlay -->
     <canvas id="confetti-canvas" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 2;"></canvas>
     
     <div class="match-box" style="z-index: 5;">
@@ -611,7 +712,6 @@
       <p class="match-sub" id="match-congrats-names">Dercio e Parceira deram like no mesmo filme!</p>
       
       <div class="match-card-display">
-        <!-- Merged visual showing posters -->
         <div class="match-poster-wrapper">
           <div class="match-hearts">❤️</div>
           <img src="" alt="Poster do Filme Match" id="match-movie-poster">
@@ -645,13 +745,54 @@
     </div>
   </section>
 
+  <!-- Modal de Registro de Memória (Diary) -->
+  <div id="diary-modal" class="modal-overlay">
+    <div class="modal-content glass">
+      <h3 class="modal-title">Registrar Encontro 📝</h3>
+      <p id="diary-modal-movie-title" class="modal-subtitle">Filme: Interestelar</p>
+      
+      <form id="diary-form" onsubmit="event.preventDefault();">
+        <input type="hidden" id="diary-movie-id">
+        <div class="form-group">
+          <label class="form-label" style="font-size: 0.85rem; margin-bottom: 0.35rem; display:block;">Data do Encontro:</label>
+          <input type="date" id="diary-date" style="width:100%; padding:0.75rem; border-radius:12px; border:1px solid var(--border-color); background:rgba(255,255,255,0.03); color:#fff; font-family:inherit; outline:none; box-sizing:border-box;" required>
+        </div>
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" style="font-size: 0.85rem; margin-bottom: 0.25rem; display:block;">Avaliação do Casal (Corações):</label>
+          <div class="heart-rating" id="heart-rating-container">
+            <span class="heart-star selected" data-rating="1">❤️</span>
+            <span class="heart-star selected" data-rating="2">❤️</span>
+            <span class="heart-star selected" data-rating="3">❤️</span>
+            <span class="heart-star selected" data-rating="4">❤️</span>
+            <span class="heart-star selected" data-rating="5">❤️</span>
+          </div>
+          <input type="hidden" id="diary-rating-value" value="5">
+        </div>
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" style="font-size: 0.85rem; margin-bottom: 0.35rem; display:block;">Nossas Notas / Recordações do Dia:</label>
+          <textarea id="diary-notes" placeholder="Ex: Pedimos pizza e rimos muito com o robô TARS..." required></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="btn-close-diary-modal">Cancelar</button>
+          <button type="submit" class="btn-cta" id="btn-save-diary" style="margin-top:0;">Salvar Memória ❤️</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer>
     <p>CineMatch © 2026. Feito com amor para casais cinéfilos. ❤️</p>
   </footer>
+</Layout>
 
-  <!-- Scripts -->
-  <script src="movies.js"></script>
-  <script src="app.js"></script>
-</body>
-</html>
+<!-- Carregar a base de dados em tempo real -->
+<script is:inline define:vars={{ moviesList }}>
+  window.MOVIE_DATABASE = moviesList;
+</script>
+
+<!-- Scripts principais compilados pelo Astro -->
+<script>
+  import "../scripts/app.js";
+</script>

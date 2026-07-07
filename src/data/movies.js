@@ -1,5 +1,5 @@
 // Banco de dados curado e seletivo de filmes para o CineMatch
-const MOVIE_DATABASE = [
+export const MOVIE_DATABASE = [
   {
     "id": "sf-1",
     "title": "Interestelar",
