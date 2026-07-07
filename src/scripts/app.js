@@ -669,6 +669,29 @@ function triggerButtonSwipe(direction) {
     if (stamp) stamp.style.opacity = "0.9";
     
     swipeCard(topCard, direction, side);
+    
+    const isLike = direction === "right" || direction === "up";
+    if (isLike) {
+      setTimeout(() => {
+        if (state.currentTurn !== side) return;
+        
+        if (side === "A") {
+          state.currentTurn = "B";
+          const indicator = document.getElementById("turn-indicator-name");
+          if (indicator) {
+            indicator.textContent = `Turno de ${state.partnerB}`;
+            indicator.className = "player-turn-indicator secondary";
+            indicator.style.color = "var(--secondary)";
+            indicator.style.boxShadow = "var(--shadow-neon-secondary)";
+            indicator.style.border = "1px solid rgba(139, 92, 246, 0.2)";
+            indicator.style.background = "rgba(139, 92, 246, 0.08)";
+          }
+          renderDeck("cards-deck", "B");
+        } else if (side === "B") {
+          finishTurnBasedMatch();
+        }
+      }, 420);
+    }
   }
 }
 
