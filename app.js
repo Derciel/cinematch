@@ -389,8 +389,8 @@ function attachDragEvents(card, side) {
     // Calcular rotação proporcional ao deslocamento lateral
     const rotation = deltaX / 15;
     
-    // Mover o elemento fisicamente
-    card.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotation}deg)`;
+    // Mover o elemento fisicamente com aceleração por hardware (3D)
+    card.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) rotate(${rotation}deg)`;
     
     // Opacidade dos stamps baseada no deslocamento
     if (deltaX > 20) {
@@ -477,8 +477,8 @@ function swipeCard(card, direction, side) {
     rotate = 5;
   }
   
-  // Aplicar transformação final de saída
-  card.style.transform = `translate(${xMove}px, ${yMove}px) rotate(${rotate}deg)`;
+  // Aplicar transformação final de saída com aceleração por hardware (3D)
+  card.style.transform = `translate3d(${xMove}px, ${yMove}px, 0) rotate(${rotate}deg)`;
   card.style.opacity = "0";
 
   // Remover carta física do DOM após a transição terminar
