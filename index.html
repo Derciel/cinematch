@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineMatch - Escolha o Filme Ideal Para o Casal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- SVG Gradient Definitions -->
+  <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+    <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d946ef" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+  </svg>
+
+  <!-- Global Header -->
+  <header class="glass">
+    <div class="logo" id="header-logo">
+      <!-- Heart + Movie Reel Icon -->
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#logo-grad)" />
+        <path d="M12 7.5c-1-1-2.5-1.5-4-1.5S5 6.5 4 7.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+        <circle cx="12" cy="12" r="3" stroke="#ffffff" stroke-width="1.5" />
+      </svg>
+      <span>CineMatch</span>
+    </div>
+    
+    <nav>
+      <ul class="nav-links" id="nav-menu" style="display: none;">
+        <li><a class="nav-link active" data-screen="play-screen">Jogar</a></li>
+        <li><a class="nav-link" data-screen="history-screen">Matches</a></li>
+        <li><a class="nav-link" data-screen="ideas-screen">Ideias de Encontros</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Viewport -->
+  <main>
+    
+    <!-- 1. SETUP / CONFIGURATION SCREEN -->
+    <section id="setup-screen" class="screen active">
+      <div class="setup-container glass">
+        <h1 class="setup-title">Encontre o filme perfeito.</h1>
+        <p class="setup-subtitle">Sem discussões, sem rolar catálogos infinitos. Apenas deem likes e assistam.</p>
+        
+        <form id="setup-form" onsubmit="event.preventDefault();">
+          
+          <!-- Partners Names -->
+          <div class="form-group">
+            <label class="form-label">Nossos Nomes</label>
+            <div class="partners-input-grid">
+              <div class="partner-input-wrapper">
+                <input type="text" id="partner-a-input" value="Ele" placeholder="Parceiro A" required>
+              </div>
+              <div class="partner-input-wrapper">
+                <input type="text" id="partner-b-input" value="Ela" placeholder="Parceiro B" required>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Genres Favorites Selection -->
+          <div class="form-group">
+            <label class="form-label">Gêneros Favoritos de Hoje</label>
+            <div class="genre-grid">
+              <div class="genre-pill selected" data-genre="Ficção Científica">
+                <!-- Planet / SciFi SVG -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="6" stroke-width="2"/>
+                  <ellipse cx="12" cy="12" rx="10" ry="3" transform="rotate(-15 12 12)" stroke-width="2"/>
+                </svg>
+                <span>Sci-Fi</span>
+              </div>
+              <div class="genre-pill selected" data-genre="Terror">
+                <!-- Ghost / Horror SVG -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C7.5 2 4 5.5 4 10v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-4.5-3.5-8-8-8z" stroke-width="2"/>
+                  <circle cx="9" cy="10" r="1.5" fill="currentColor"/>
+                  <circle cx="15" cy="10" r="1.5" fill="currentColor"/>
+                  <path d="M12 14c-1.5 0-2 .5-2 1.5s.5 1.5 2 1.5 2-.5 2-1.5-.5-1.5-2-1.5z" fill="currentColor"/>
+                </svg>
+                <span>Terror</span>
+              </div>
+              <div class="genre-pill selected" data-genre="Ação">
+                <!-- Explosion / Action SVG -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+                <span>Ação</span>
+              </div>
+              <div class="genre-pill selected" data-genre="Aventura">
+                <!-- Compass / Adventure SVG -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" stroke-width="2"/>
+                  <path d="M16.2 7.8L12.8 12.8L7.8 16.2L11.2 11.2L16.2 7.8Z" stroke-width="2" fill="currentColor"/>
+                </svg>
+                <span>Aventura</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mode Selection -->
+          <div class="form-group">
+            <label class="form-label">Modo de Jogo</label>
+            <div class="mode-grid">
+              <div class="mode-option selected" data-mode="turn">
+                <!-- Mobile swap SVG -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="5" y="2" width="14" height="20" rx="3" stroke-width="2"/>
+                  <line x1="10" y1="20" x2="14" y2="20" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M12 6a3 3 0 0 1 3 3v6" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M10 12l2 3 2-3" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                </svg>
+                <div class="mode-option-title">Passa o Celular</div>
+                <div class="mode-option-desc">Joguem por turnos. Um escolhe, passa o aparelho e o outro escolhe nas mesmas cartas.</div>
+              </div>
+              
+              <div class="mode-option" data-mode="split">
+                <!-- Split Screen SVG -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="3" width="20" height="18" rx="2" stroke-width="2"/>
+                  <line x1="12" y1="3" x2="12" y2="21" stroke-width="2"/>
+                  <path d="M7 8l-2 2 2 2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M17 8l2 2-2 2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="mode-option-title">Tela Dividida</div>
+                <div class="mode-option-desc">Ambos escolhem ao mesmo tempo em lados opostos na tela. (Ideal para PC/Tablet).</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Sincronização de Dispositivos (NFC) -->
+          <div class="form-group" style="margin-top: 1.75rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <label class="form-label">Sincronizar Celulares (Dois Dispositivos)</label>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+              <button type="button" class="btn-secondary" id="nfc-read-btn" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.75rem 1.25rem; border-radius: 12px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Ler NFC do Parceiro
+              </button>
+              <button type="button" class="btn-secondary" id="link-read-btn" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.75rem 1.25rem; border-radius: 12px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                Colar Link de Palpites
+              </button>
+            </div>
+            <div id="sync-status-msg" style="margin-top: 0.75rem; font-size: 0.85rem; color: #10b981; display: none; text-align: center; font-weight: 600;"></div>
+          </div>
+          
+          <button type="button" class="btn-cta" id="start-match-btn">Iniciar CineMatch</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 2. PLAY SCREEN (TURN-BASED MULTIPLAYER) -->
+    <section id="play-screen" class="screen">
+      <div class="play-layout">
+        
+        <!-- Player Turn indicator -->
+        <div class="player-turn-indicator" id="turn-indicator-name">Turno de Ele</div>
+        
+        <!-- Cards Deck -->
+        <div class="deck-container" id="cards-deck">
+          <!-- Movie cards will be loaded dynamically via JS -->
+          
+          <!-- Transition card (Pass the phone safe-gate screen) -->
+          <div class="round-transition-overlay" id="round-transition-screen">
+            <h2 class="round-transition-title">Rodada Concluída!</h2>
+            <p class="round-transition-desc" id="transition-instruction-text">Agora passe o dispositivo para o parceiro escolher os filmes.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 320px; align-items: center;" id="turn-transition-actions-container">
+              <button type="button" class="btn-cta" id="next-turn-ready-btn" style="width: 100%; margin-top: 0;">Estou Pronto(a), Começar</button>
+              
+              <!-- Opções de envio de dados de sincronização -->
+              <div style="margin-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem; width: 100%; display: flex; flex-direction: column; gap: 0.75rem;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Ou envie para o parceiro:</span>
+                <button type="button" class="btn-secondary" id="nfc-write-btn" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.75rem 1rem; width: 100%; border-radius: 12px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                  Gravar em Tag NFC
+                </button>
+                <button type="button" class="btn-secondary" id="link-share-btn" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.75rem 1rem; width: 100%; border-radius: 12px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                    <polyline points="16 6 12 2 8 6"/>
+                    <line x1="12" y1="2" x2="12" y2="15"/>
+                  </svg>
+                  Copiar Link / WhatsApp
+                </button>
+              </div>
+            </div>
+            
+            <div id="transition-sync-status" style="margin-top: 1rem; font-size: 0.85rem; color: #d946ef; font-weight: 600; display: none;"></div>
+          </div>
+        </div>
+        
+        <!-- Interactive Controls -->
+        <div class="controls-panel" id="deck-controls-panel">
+          <!-- Dislike Button -->
+          <button class="btn-action btn-dislike" id="action-dislike" aria-label="Gostei Não">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <!-- Superlike Button -->
+          <button class="btn-action btn-superlike" id="action-superlike" aria-label="Superlike">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <!-- Like Button -->
+          <button class="btn-action btn-like" id="action-like" aria-label="Gostei">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- 3. PLAY SCREEN (SPLIT-SCREEN SIMULTANEOUS MODE) -->
+    <section id="split-screen-play" class="screen">
+      <div class="split-play-container">
+        
+        <!-- Left Side: Player A -->
+        <div class="split-side side-a" id="split-deck-a">
+          <div class="split-name-tag player-a" id="split-tag-a">Ele</div>
+          <div class="deck-container" id="cards-deck-a">
+            <!-- Loaded dynamically -->
+          </div>
+          <div class="controls-panel">
+            <button class="btn-action btn-dislike" id="action-split-dislike-a">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+            </button>
+            <button class="btn-action btn-like" id="action-split-like-a">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+            </button>
+          </div>
+          <div class="keyboard-hint">
+            <span>Dislike: <kbd class="keyboard-key">Q</kbd></span>
+            <span>Like: <kbd class="keyboard-key">W</kbd></span>
+          </div>
+        </div>
+        
+        <!-- Right Side: Player B -->
+        <div class="split-side side-b" id="split-deck-b">
+          <div class="split-name-tag player-b" id="split-tag-b">Ela</div>
+          <div class="deck-container" id="cards-deck-b">
+            <!-- Loaded dynamically -->
+          </div>
+          <div class="controls-panel">
+            <button class="btn-action btn-dislike" id="action-split-dislike-b">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+            </button>
+            <button class="btn-action btn-like" id="action-split-like-b">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+            </button>
+          </div>
+          <div class="keyboard-hint">
+            <span>Dislike: <kbd class="keyboard-key">O</kbd></span>
+            <span>Like: <kbd class="keyboard-key">P</kbd></span>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- 4. MATCH HISTORY & DECIDE FOR US (SPIN THE WHEEL) -->
+    <section id="history-screen" class="screen">
+      <div class="history-layout">
+        
+        <!-- Matches List -->
+        <div class="matches-list-container">
+          <h2 class="section-title">Nossos Matches</h2>
+          <p class="section-subtitle">Filmes que ambos curtiram e aprovaram.</p>
+          
+          <div class="matches-grid" id="matches-display-grid">
+            <!-- List will render here -->
+            <div class="empty-matches">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8 12h8M12 8v8"/>
+              </svg>
+              <h3>Nenhum match ainda</h3>
+              <p>Comecem a jogar para encontrar filmes em comum!</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Spin the Wheel sidebar (to choose randomly between matches) -->
+        <div class="decide-sidebar glass" id="roulette-section" style="display: none;">
+          <h3 class="decide-title">Indecisos?</h3>
+          <p class="decide-desc">Se vocês tiveram muitos matches e não conseguem decidir qual assistir hoje, deixe o CineMatch girar a roleta!</p>
+          
+          <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <div class="wheel-center"></div>
+            <div class="wheel-outer" id="spinning-wheel">
+              <canvas class="wheel-canvas" id="wheel-canvas" width="220" height="220"></canvas>
+            </div>
+            
+            <div class="spin-result-popup" id="wheel-result-popup">Filme Sorteado!</div>
+          </div>
+          
+          <button class="btn-spin" id="spin-wheel-btn">Sortear Filme</button>
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- 5. IDEAS & CHALLENGES SCREEN -->
+    <section id="ideas-screen" class="screen">
+      <h2 class="section-title">Ideias de Encontros de Cinema</h2>
+      <p class="section-subtitle">Combine os filmes com lanches, desafios e decorações temáticas para tornar a noite inesquecível!</p>
+      
+      <div class="ideas-grid">
+        
+        <!-- Card 1 -->
+        <div class="idea-card glass">
+          <div class="idea-header">
+            <div class="idea-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 22h20L12 2z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="idea-title">Noite Interestelar</h3>
+              <p class="idea-category" style="font-size: 0.8rem; color: var(--secondary); font-weight:700;">FICÇÃO CIENTÍFICA</p>
+            </div>
+            <span class="idea-badge">Imersivo</span>
+          </div>
+          <p class="idea-description">Crie um ambiente cósmico na sala para curtir o melhor da ficção científica e viagem espacial.</p>
+          <ul class="idea-details-list">
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Decoração:</strong> Luzes apagadas, pisca-pisca simulando estrelas ou luz LED azul/roxa.</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Comida:</strong> Pipoca gourmet com queijo provolone ralado (parecendo pó lunar) e refrigerante ou drink de curaçau blue.</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Desafio:</strong> De quem é a teoria do filme? Tentem explicar o paradoxo do filme no final em menos de 2 minutos.</span>
+            </li>
+          </ul>
+          <div class="idea-footer">
+            <span class="idea-difficulty">Fácil • 15 min prep</span>
+            <button class="btn-idea-action" onclick="alert('Selecione Ficção Científica na aba Jogar e comece sua maratona de exploração cósmica!')">Escolher este gênero →</button>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="idea-card glass">
+          <div class="idea-header">
+            <div class="idea-icon-wrapper pink">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M9 17v-5h6v5M9 7h6"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="idea-title">Terror no Escuro</h3>
+              <p class="idea-category" style="font-size: 0.8rem; color: var(--primary); font-weight:700;">TERROR / SUSPENSE</p>
+            </div>
+            <span class="idea-badge pink">Arrepiante</span>
+          </div>
+          <p class="idea-description">Para casais que gostam de ficar agarrados de susto. Apague tudo e prepare-se.</p>
+          <ul class="idea-details-list">
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Decoração:</strong> Escuridão absoluta. Use uma vela vermelha de decoração para dar um ar místico.</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Comida:</strong> Nachos com molho 'sangrento' (ketchup picante ou geleia de pimenta vermelha sobre cream cheese).</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Desafio de Casal:</strong> A cada susto (jump scare) ou grito no filme, quem se assustar primeiro deve fazer uma massagem de 5 minutos no outro após o término.</span>
+            </li>
+          </ul>
+          <div class="idea-footer">
+            <span class="idea-difficulty">Média • 5 min prep</span>
+            <button class="btn-idea-action" onclick="alert('Ligue o Terror e abrace forte o seu parceiro na próxima jogada!')">Escolher este gênero →</button>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="idea-card glass">
+          <div class="idea-header">
+            <div class="idea-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="idea-title">Ação e Adrenalina</h3>
+              <p class="idea-category" style="font-size: 0.8rem; color: var(--secondary); font-weight:700;">AÇÃO E AVENTURA</p>
+            </div>
+            <span class="idea-badge">Dinâmico</span>
+          </div>
+          <p class="idea-description">Transforme a noite em uma montanha-russa de emoções com som alto e lanches práticos.</p>
+          <ul class="idea-details-list">
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Decoração:</strong> Som estéreo ou fone de ouvido compartilhado se estiver tarde. Tela o mais perto possível.</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Comida:</strong> Hambúrguer caseiro com fritas rústicas e muito cheddar (fácil de comer na mão).</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Desafio:</strong> Façam apostas no início de quem será o sobrevivente final ou quem dará o golpe final. Quem acertar ganha o direito de escolher o próximo filme sem precisar de votação!</span>
+            </li>
+          </ul>
+          <div class="idea-footer">
+            <span class="idea-difficulty">Elaborada • 30 min prep</span>
+            <button class="btn-idea-action" onclick="alert('Selecione Ação ou Aventura para acelerar os batimentos cardíacos do casal!')">Escolher este gênero →</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 6. FULLSCREEN MATCH CELEBRATION OVERLAY -->
+  <section class="match-overlay" id="match-celebration-screen">
+    <!-- Confetti canvas overlay -->
+    <canvas id="confetti-canvas" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 2;"></canvas>
+    
+    <div class="match-box" style="z-index: 5;">
+      <h1 class="match-banner">É um Match!</h1>
+      <p class="match-sub" id="match-congrats-names">Dercio e Parceira deram like no mesmo filme!</p>
+      
+      <div class="match-card-display">
+        <!-- Merged visual showing posters -->
+        <div class="match-poster-wrapper">
+          <div class="match-hearts">❤️</div>
+          <img src="" alt="Poster do Filme Match" id="match-movie-poster">
+        </div>
+        
+        <div class="match-details-container">
+          <h2 class="match-movie-title" id="match-movie-title">Interestelar</h2>
+          <div class="match-movie-info">
+            <span id="match-movie-year">2014</span> • 
+            <span id="match-movie-duration">2h 49m</span> • 
+            <span id="match-movie-rating">⭐ 8.7</span>
+          </div>
+          <p class="match-movie-synopsis" id="match-movie-synopsis">
+            Uma equipe de exploradores viaja através de um buraco de minhoca no espaço em uma tentativa de garantir a sobrevivência da humanidade.
+          </p>
+          
+          <div class="movie-platforms-row" style="justify-content: center; margin-bottom: 2rem;">
+            <span class="movie-platforms-title">Disponível em:</span>
+            <div id="match-movie-platforms" style="display: flex; gap: 0.5rem;">
+              <span class="platform-tag">Max</span>
+              <span class="platform-tag">Prime Video</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="match-actions">
+        <button class="btn-secondary" id="match-keep-swiping-btn">Continuar Jogando</button>
+        <button class="btn-cta" id="match-watch-now-btn" style="width: auto; margin-top:0;">Assistir Agora</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>CineMatch © 2026. Feito com amor para casais cinéfilos. ❤️</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="movies.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

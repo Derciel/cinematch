@@ -1,0 +1,11 @@
+# IDE and environment files
+.gemini/
+.system_generated/
+scratch/
+*.log
+
+# Operating System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
