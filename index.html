@@ -33,6 +33,7 @@
         <li><a class="nav-link active" data-screen="play-screen">Jogar</a></li>
         <li><a class="nav-link" data-screen="history-screen">Matches</a></li>
         <li><a class="nav-link" data-screen="ideas-screen">Ideias de Encontros</a></li>
+        <li><a class="nav-link" data-screen="wines-screen">Vinhos</a></li>
       </ul>
     </nav>
   </header>
@@ -428,6 +429,112 @@
             <span class="idea-difficulty">Elaborada • 30 min prep</span>
             <button class="btn-idea-action" onclick="alert('Selecione Ação ou Aventura para acelerar os batimentos cardíacos do casal!')">Escolher este gênero →</button>
           </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 7. WINES & PAIRING SCREEN -->
+    <section id="wines-screen" class="screen">
+      <h2 class="section-title">Adega CineMatch & Harmonização</h2>
+      <p class="section-subtitle">A noite de cinema merece um brinde especial. Descubra a melhor combinação para o prato de hoje!</p>
+
+      <!-- Painel Interativo de Escolha Rápida -->
+      <div class="wine-interactive-selector glass" style="margin-bottom: 3rem; padding: 2.25rem 2rem; text-align: center; border: 1px solid rgba(212, 175, 55, 0.15); background: linear-gradient(135deg, rgba(114, 47, 55, 0.08), rgba(25, 30, 45, 0.1));">
+        <h3 style="font-family: var(--font-serif); font-size: 1.65rem; margin-bottom: 0.5rem; color: #fff;">O que vamos comer hoje?</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.75rem;">Selecione o lanche do filme e recomendaremos o vinho perfeito!</p>
+        
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;" id="food-select-buttons">
+          <button type="button" class="btn-secondary active" data-food="popcorn" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🍿 Pipoca & Snacks</button>
+          <button type="button" class="btn-secondary" data-food="pizza" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🍕 Pizza</button>
+          <button type="button" class="btn-secondary" data-food="burger" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🍔 Hambúrguer</button>
+          <button type="button" class="btn-secondary" data-food="sushi" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🍣 Sushi</button>
+          <button type="button" class="btn-secondary" data-food="pasta" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🍝 Massa / Fondue</button>
+          <button type="button" class="btn-secondary" data-food="chocolate" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🍫 Chocolate</button>
+        </div>
+        
+        <div class="wine-result-card glass" id="wine-result-card" style="display: flex; flex-direction: column; align-items: center; max-width: 500px; margin: 0 auto; padding: 2rem; border-radius: 18px; border: 1.5px solid rgba(212, 175, 55, 0.2); background: rgba(8, 11, 17, 0.5);">
+          <!-- Carregado via Javascript -->
+        </div>
+      </div>
+
+      <!-- Grid com todas as harmonizações detalhadas -->
+      <h3 class="section-title" style="font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1rem; font-family: var(--font-serif); text-align: center;">Guia Completo de Harmonização</h3>
+      <div class="ideas-grid" style="margin-bottom: 2rem;">
+        
+        <!-- Card 1 -->
+        <div class="idea-card glass" style="border: 1px dashed rgba(212, 175, 55, 0.15);">
+          <div class="idea-header">
+            <div class="idea-icon-wrapper" style="background: rgba(212, 175, 55, 0.1); color: #D4AF37; border-color: rgba(212, 175, 55, 0.2);">
+              🍿
+            </div>
+            <div>
+              <h3 class="idea-title">Pipoca & Salgadinhos</h3>
+              <p class="idea-category" style="font-size: 0.8rem; color: #D4AF37; font-weight:700;">ESPUMANTE BRUT / CHARDONNAY</p>
+            </div>
+            <span class="idea-badge" style="background: rgba(212, 175, 55, 0.1); color: #D4AF37;">Branco / Espumante</span>
+          </div>
+          <p class="idea-description">A pipoca salgada com manteiga ou nachos são acompanhamentos clássicos de cinema que ganham sofisticação.</p>
+          <ul class="idea-details-list">
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Por que harmoniza:</strong> A acidez do Espumante limpa o sal e a gordura da pipoca. As notas amanteigadas do Chardonnay complementam o sabor da manteiga.</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Temperatura:</strong> Servir bem resfriado, entre 6°C e 8°C para o Espumante, e 10°C para o Chardonnay.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="idea-card glass" style="border: 1px dashed rgba(114, 47, 55, 0.15);">
+          <div class="idea-header">
+            <div class="idea-icon-wrapper" style="background: rgba(114, 47, 55, 0.1); color: #722F37; border-color: rgba(114, 47, 55, 0.2);">
+              🍕
+            </div>
+            <div>
+              <h3 class="idea-title">Pizzas Clássicas</h3>
+              <p class="idea-category" style="font-size: 0.8rem; color: #f43f5e; font-weight:700;">CHIANTI / MERLOT</p>
+            </div>
+            <span class="idea-badge pink" style="background: rgba(114, 47, 55, 0.1); color: #f43f5e;">Tinto Médio</span>
+          </div>
+          <p class="idea-description">Seja Margherita, Calabresa ou Pepperoni, as pizzas combinam idealmente com vinhos tintos italianos e frutados.</p>
+          <ul class="idea-details-list">
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Por que harmoniza:</strong> A uva Sangiovese do Chianti tem acidez alta que equilibra o molho de tomate e corta a cremosidade do queijo derretido.</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Temperatura:</strong> Servir fresco, por volta de 16°C para desfrutar da riqueza de frutas.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="idea-card glass" style="border: 1px dashed rgba(114, 47, 55, 0.15);">
+          <div class="idea-header">
+            <div class="idea-icon-wrapper" style="background: rgba(114, 47, 55, 0.1); color: #722F37; border-color: rgba(114, 47, 55, 0.2);">
+              🍔
+            </div>
+            <div>
+              <h3 class="idea-title">Hambúrguer & Batata Frita</h3>
+              <p class="idea-category" style="font-size: 0.8rem; color: #8b5cf6; font-weight:700;">MALBEC / CABERNET SAUVIGNON</p>
+            </div>
+            <span class="idea-badge" style="background: rgba(114, 47, 55, 0.1); color: #8b5cf6;">Tinto Encorpado</span>
+          </div>
+          <p class="idea-description">Para jantares informais e suculentos, vinhos robustos estruturam e casam com a força da carne bovina.</p>
+          <ul class="idea-details-list">
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Por que harmoniza:</strong> Os taninos potentes do Malbec 'limpam' a boca da gordura da carne e do queijo cheddar, realçando a suculência.</span>
+            </li>
+            <li class="idea-detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><strong>Temperatura:</strong> Ideal em torno de 17°C ou 18°C. Abra a garrafa alguns minutos antes de comer.</span>
+            </li>
+          </ul>
         </div>
 
       </div>

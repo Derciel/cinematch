@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initButtons();
   initKeyboardShortcuts();
   initNFCSync();
+  initWinesScreen();
 });
 
 // ==================== NAV E TELAS ====================
@@ -1280,4 +1281,122 @@ function handleLinkRead() {
   } catch (err) {
     alert("Erro ao ler o link. Certifique-se de colar a URL exatamente como copiada.");
   }
+}
+
+// ==================== LÓGICA DA CARTA DE VINHOS ====================
+
+const WINE_PAIRINGS = {
+  popcorn: {
+    emoji: "🍿",
+    food: "Pipoca & Snacks Salgados",
+    wine: "Chardonnay ou Espumante Brut",
+    type: "Branco Amanteigado ou Espumante Fresco",
+    desc: "A acidez vibrante e as borbulhas do Espumante Brut cortam o sal e a gordura da manteiga da pipoca. Se preferirem um vinho tranquilo, o Chardonnay com passagem por barrica traz notas amanteigadas que combinam perfeitamente com a pipoca de cinema.",
+    tip: "Sirva bem gelado (6°C a 10°C) em taças de espumante ou taças normais de vinho branco.",
+    color: "#D4AF37"
+  },
+  pizza: {
+    emoji: "🍕",
+    food: "Pizza Margherita, Pepperoni ou Calabresa",
+    wine: "Chianti (Sangiovese) ou Merlot",
+    type: "Tinto de Médio Corpo",
+    desc: "O molho de tomate tem acidez alta, e queijo derretido tem bastante gordura. A uva Sangiovese (típica do Chianti) possui a acidez ideal para casar com o tomate e a estrutura perfeita para cortar o queijo sem pesar.",
+    tip: "Sirva em taças de vinho tinto a cerca de 16°C (um pouco abaixo da temperatura ambiente).",
+    color: "#e11d48"
+  },
+  burger: {
+    emoji: "🍔",
+    food: "Hambúrguer, Fritas e Cheddar",
+    wine: "Malbec ou Cabernet Sauvignon",
+    type: "Tinto Encorpado e Robusto",
+    desc: "A carne bovina e o queijo forte exigem um vinho com estrutura. Os taninos marcantes do Malbec ajudam a quebrar as proteínas da carne e limpam a gordura do queijo cheddar a cada gole, preparando a boca para a próxima mordida.",
+    tip: "Abra a garrafa de 15 a 20 minutos antes de consumir para que o vinho respire um pouco (17°C a 18°C).",
+    color: "#722F37"
+  },
+  sushi: {
+    emoji: "🍣",
+    food: "Sushi, Temaki e Sashimi",
+    wine: "Sauvignon Blanc ou Vinho Verde",
+    type: "Branco Seco, Aromático e Jovem",
+    desc: "Peixes crus e frutos do mar têm sabores muito delicados que seriam totalmente abafados por vinhos tintos. Brancos leves e cítricos realçam o frescor do peixe e sua acidez limpa a boca do shoyu salgado.",
+    tip: "Sirva gelado (8°C a 10°C). Evite vinhos brancos muito encorpados ou doces.",
+    color: "#10b981"
+  },
+  pasta: {
+    emoji: "🍝",
+    food: "Massa ao Molho Branco, Fondue ou Risoto",
+    wine: "Pinot Noir ou Chardonnay",
+    type: "Tinto Leve / Branco Estruturado",
+    desc: "Pratos cremosos e à base de queijos brancos ou creme de leite pedem vinhos que acompanhem essa textura. O Chardonnay traz o peso ideal para o molho branco. Se preferirem tinto, a leveza e a alta acidez do Pinot Noir harmonizam sem brigar com o prato.",
+    tip: "Se optar pelo Pinot Noir, sirva-o ligeiramente resfriado (14°C a 15°C) para ressaltar as notas de frutas vermelhas.",
+    color: "#c084fc"
+  },
+  chocolate: {
+    emoji: "🍫",
+    food: "Chocolate Meio Amargo, Brownies ou Trufas",
+    wine: "Vinho do Porto Tawny ou Ruby",
+    type: "Tinto Licoroso / Fortificado Doce",
+    desc: "O chocolate comum costuma amargar vinhos secos convencionais devido ao açúcar. O Vinho do Porto é fortificado e doce, possuindo teor alcoólico e dulçor na medida exata para abraçar a intensidade do cacau e fechar a noite em grande estilo.",
+    tip: "Sirva em pequenas doses (cálices) acompanhando a sobremesa no final do filme.",
+    color: "#be185d"
+  }
+};
+
+function initWinesScreen() {
+  const selectButtons = document.getElementById("food-select-buttons");
+  if (!selectButtons) return;
+
+  const buttons = selectButtons.querySelectorAll("button");
+  
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const foodKey = btn.getAttribute("data-food");
+      renderWinePairing(foodKey);
+    });
+  });
+
+  // Renderizar o primeiro emparelhamento (Pipoca) por padrão
+  renderWinePairing("popcorn");
+}
+
+function renderWinePairing(key) {
+  const card = document.getElementById("wine-result-card");
+  if (!card) return;
+
+  const data = WINE_PAIRINGS[key];
+  if (!data) return;
+
+  // Efeito de fade suave na transição
+  card.style.opacity = "0";
+  card.style.transform = "scale(0.96)";
+  card.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+
+  setTimeout(() => {
+    card.innerHTML = `
+      <div style="font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${data.emoji}</div>
+      <h4 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem;">Combinação para:</h4>
+      <p style="font-size: 1rem; color: var(--text-muted); font-weight: 600; margin-bottom: 1rem; text-align: center;">${data.food}</p>
+      
+      <div style="width: 100%; border-top: 1px dashed rgba(255,255,255,0.08); margin: 0.75rem 0; padding-top: 1rem; text-align: center;">
+        <span style="font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: ${data.color}; font-weight: 700;">Recomendação</span>
+        <h3 style="font-size: 1.4rem; font-family: var(--font-serif); font-weight: 700; margin-top: 0.25rem; color: ${data.color}; text-shadow: 0 0 10px rgba(0,0,0,0.5);">${data.wine}</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; margin-bottom: 1rem;">${data.type}</p>
+      </div>
+      
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; text-align: center; margin-bottom: 1.25rem;">
+        ${data.desc}
+      </p>
+      
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 0.75rem 1rem; border-radius: 12px; width: 100%; text-align: left;">
+        <p style="font-size: 0.75rem; color: var(--text-main); line-height: 1.4;">
+          💡 <strong>Dica de Serviço:</strong> ${data.tip}
+        </p>
+      </div>
+    `;
+    card.style.opacity = "1";
+    card.style.transform = "scale(1)";
+  }, 150);
 }
