@@ -1644,6 +1644,7 @@ function updateAnniversaryCounter() {
     days--;
   }
   if (days < 0) {
+    months--;
     const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
     days += prevMonthLastDay;
   }
