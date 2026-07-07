@@ -1421,7 +1421,7 @@ function updateAnniversaryCounter() {
   if (days < 0) {
     const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
     days += prevMonthLastDay;
-    months--;
+    // Removido months-- para adequar à contagem humana do casal (quase 3 meses)
   }
 
   // Ajustar se o mês atual for menor que o mês de início do namoro
