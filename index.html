@@ -30,7 +30,7 @@
       <div class="splash-counter-box">
         <span class="splash-counter-label">Tempo que nos conhecemos</span>
         <h2 id="splash-time-counter" class="splash-counter-value">Carregando amor...</h2>
-        <span class="splash-date-badge">Desde 09/05/2026</span>
+        <span class="splash-date-badge">Desde 09/04/2026</span>
       </div>
 
       <button type="button" id="btn-enter-app" class="btn-primary btn-glowing" style="padding: 0.85rem 2rem; border-radius: 99px; margin-top: 0.5rem; font-size: 0.95rem; font-weight: 700;">
@@ -59,15 +59,28 @@
       <span>CineMatch</span>
     </div>
     
-    <nav>
+    <nav style="display: flex; align-items: center; gap: 1rem;">
       <ul class="nav-links" id="nav-menu">
         <li><a class="nav-link active" data-screen="play-screen">Jogar</a></li>
         <li><a class="nav-link" data-screen="history-screen">Matches</a></li>
         <li><a class="nav-link" data-screen="ideas-screen">Ideias de Encontros</a></li>
         <li><a class="nav-link" data-screen="wines-screen">Vinhos</a></li>
       </ul>
+      
+      <!-- Botão de controle da música de fundo -->
+      <button type="button" id="btn-toggle-music" style="padding: 0.5rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: pointer; transition: var(--transition-fast);" title="Música de fundo">
+        <svg id="music-icon-on" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+        <svg id="music-icon-off" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4.27 3L3 4.27l9 9v.28c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4v-1.73l6 6L21 20.73 4.27 3zM14 7h4V3h-6v5.18l2 2V7z"/>
+        </svg>
+      </button>
     </nav>
   </header>
+
+  <!-- Hidden Music Player -->
+  <iframe id="bg-music-player" src="" style="display:none;" allow="autoplay"></iframe>
 
   <!-- Main Viewport -->
   <main>

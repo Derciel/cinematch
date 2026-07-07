@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initWinesScreen();
   updateAnniversaryCounter();
   initSplashScreen();
+  initMusicToggle();
   
   // Atualizar o contador com precisão de segundos a cada 1 segundo
   setInterval(updateAnniversaryCounter, 1000);
@@ -1414,7 +1415,7 @@ function updateAnniversaryCounter() {
 
   // IMPORTANTE: Defina abaixo a data e horário exatos em que vocês se conheceram
   const startYear = 2026; 
-  const startDate = new Date(startYear, 4, 9, 0, 0, 0); // 9 de Maio de 2026 às 00:00:00 (Mês 4 em JS)
+  const startDate = new Date(startYear, 3, 9, 0, 0, 0); // 9 de Abril de 2026 às 00:00:00 (Mês 3 em JS, já que Janeiro é 0)
   const now = new Date();
 
   // Calcular diferença bruta em anos, meses e dias
@@ -1455,7 +1456,7 @@ function updateAnniversaryCounter() {
   if (days > 0 || compactParts.length === 0) compactParts.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
   
   let compactTime = compactParts.length === 2 ? compactParts.join(" e ") : compactParts.join(", ");
-  counterEl.textContent = `Nos conhecemos há ${compactTime} • Desde 09/05/${startYear}`;
+  counterEl.textContent = `Nos conhecemos há ${compactTime} • Desde 09/04/${startYear}`;
 
   // 2. Versão completa em tempo real para o Splash Screen (anos, meses, dias, horas, minutos e segundos)
   let fullParts = [];
@@ -1496,6 +1497,9 @@ function updateAnniversaryCounter() {
   }
 }
 
+// Controle de estado de reprodução da música
+let isMusicPlaying = false;
+
 // Inicializar e configurar a tela de Splash Romântico
 function initSplashScreen() {
   const btn = document.getElementById("btn-enter-app");
@@ -1505,5 +1509,43 @@ function initSplashScreen() {
   btn.addEventListener("click", () => {
     // Transição suave de fade-out
     splash.classList.add("fade-out");
+
+    // Iniciar a música automaticamente com autoplay
+    const player = document.getElementById("bg-music-player");
+    const iconOn = document.getElementById("music-icon-on");
+    const iconOff = document.getElementById("music-icon-off");
+
+    if (player && !isMusicPlaying) {
+      player.src = "https://www.youtube.com/embed/Rk3P1kLp0aE?autoplay=1&loop=1&playlist=Rk3P1kLp0aE";
+      isMusicPlaying = true;
+      if (iconOn) iconOn.style.display = "block";
+      if (iconOff) iconOff.style.display = "none";
+    }
+  });
+}
+
+// Inicializar e configurar o botão de Mute/Unmute no Header
+function initMusicToggle() {
+  const btn = document.getElementById("btn-toggle-music");
+  const player = document.getElementById("bg-music-player");
+  const iconOn = document.getElementById("music-icon-on");
+  const iconOff = document.getElementById("music-icon-off");
+
+  if (!btn || !player) return;
+
+  btn.addEventListener("click", () => {
+    if (isMusicPlaying) {
+      // Mutar/Parar
+      player.src = "";
+      iconOn.style.display = "none";
+      iconOff.style.display = "block";
+      isMusicPlaying = false;
+    } else {
+      // Tocar
+      player.src = "https://www.youtube.com/embed/Rk3P1kLp0aE?autoplay=1&loop=1&playlist=Rk3P1kLp0aE";
+      iconOn.style.display = "block";
+      iconOff.style.display = "none";
+      isMusicPlaying = true;
+    }
   });
 }
