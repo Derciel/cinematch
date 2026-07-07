@@ -102,9 +102,7 @@ const moviesList = await fetchRealStreamingProviders();
         <span class="splash-date-badge">Desde 09/04/2026</span>
       </div>
 
-      <button type="button" id="btn-enter-app" class="btn-primary btn-glowing" style="padding: 0.85rem 2rem; border-radius: 99px; margin-top: 0.5rem; font-size: 0.95rem; font-weight: 700;">
-        Escolher Nosso Filme ❤️
-      </button>
+      <button type="button" id="btn-enter-app" class="btn-primary btn-glowing btn-enter-app">Escolher Nosso Filme ❤️</button>
     </div>
   </div>
 
@@ -128,7 +126,7 @@ const moviesList = await fetchRealStreamingProviders();
       <span>CineMatch</span>
     </div>
 
-    <nav style="display: flex; align-items: center; gap: 1rem;">
+    <nav class="header-nav">
       <ul class="nav-links" id="nav-menu">
         <li><a class="nav-link active" data-screen="play-screen">Jogar</a></li>
         <li><a class="nav-link" data-screen="history-screen">Matches</a></li>
@@ -137,7 +135,7 @@ const moviesList = await fetchRealStreamingProviders();
         <li><a class="nav-link" data-screen="wines-screen">Vinhos</a></li>
       </ul>
 
-      <button type="button" id="btn-toggle-music" style="padding: 0.5rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: pointer; transition: var(--transition-fast);" title="Música de fundo">
+      <button type="button" id="btn-toggle-music" class="music-toggle-btn" title="Música de fundo">
         <svg id="music-icon-on" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
         </svg>
@@ -163,18 +161,18 @@ const moviesList = await fetchRealStreamingProviders();
         <p class="setup-subtitle">Sem discussões, sem rolar catálogos infinitos. Apenas deem likes e assistam.</p>
         
         <!-- Banner do Casal (Fotos e Contador de Tempo Juntos) -->
-        <div class="couple-banner glass" style="margin-top: 1.5rem; margin-bottom: 2rem; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; border: 1.5px solid rgba(217, 70, 239, 0.15); background: linear-gradient(135deg, rgba(217, 70, 239, 0.04), rgba(139, 92, 246, 0.04));">
-          <div style="display: flex; align-items: center; gap: 1.25rem; min-width: 0;">
-            <div class="couple-photos" style="display: flex; position: relative; width: 75px; height: 45px; flex-shrink: 0;">
-              <img src="foto1.jpg" alt="Parceiro A" class="photo-partner-a" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); position: absolute; left: 0; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=100&auto=format&fit=crop'">
-              <img src="foto2.jpg" alt="Parceiro B" class="photo-partner-b" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary); position: absolute; left: 25px; z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" onerror="this.src='https://images.unsplash.com/photo-1511988617509-a57c8a288659?q=80&w=100&auto=format&fit=crop'">
+        <div class="couple-banner">
+          <div class="couple-banner-left">
+            <div class="couple-photos">
+              <img src="foto1.jpg" alt="Parceiro A" class="photo-partner-a" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=100&auto=format&fit=crop'">
+              <img src="foto2.jpg" alt="Parceiro B" class="photo-partner-b" onerror="this.src='https://images.unsplash.com/photo-1511988617509-a57c8a288659?q=80&w=100&auto=format&fit=crop'">
             </div>
-            <div style="text-align: left; min-width: 0;">
-              <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.15rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Tempo que nos conhecemos</h3>
-              <p id="time-together-counter" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Carregando amor...</p>
+            <div class="couple-banner-text">
+              <h3>Tempo que nos conhecemos</h3>
+              <p id="time-together-counter">Carregando amor...</p>
             </div>
           </div>
-          <span style="font-size: 1.3rem; filter: drop-shadow(0 2px 4px rgba(217, 70, 239, 0.4)); animation: pulseHeart 1.5s infinite ease-in-out;">❤️</span>
+          <span class="couple-banner-heart">❤️</span>
         </div>
         
         <form id="setup-form" onsubmit="event.preventDefault();">
@@ -280,16 +278,16 @@ const moviesList = await fetchRealStreamingProviders();
           </div>
           
           <!-- Sincronização de Dispositivos (NFC) -->
-          <div class="form-group" style="margin-top: 1.75rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+          <div class="form-group form-group--sync">
             <label class="form-label">Sincronizar Celulares (Dois Dispositivos)</label>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-              <button type="button" class="btn-secondary" id="nfc-read-btn" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.75rem 1.25rem; border-radius: 12px;">
+            <div class="sync-buttons">
+              <button type="button" class="btn-secondary" id="nfc-read-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                 </svg>
                 Ler NFC do Parceiro
               </button>
-              <button type="button" class="btn-secondary" id="link-read-btn" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.75rem 1.25rem; border-radius: 12px;">
+              <button type="button" class="btn-secondary" id="link-read-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
                   <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
@@ -297,7 +295,7 @@ const moviesList = await fetchRealStreamingProviders();
                 Colar Link de Palpites
               </button>
             </div>
-            <div id="sync-status-msg" style="margin-top: 0.75rem; font-size: 0.85rem; color: #10b981; display: none; text-align: center; font-weight: 600;"></div>
+            <div id="sync-status-msg" class="sync-status-msg"></div>
           </div>
           
           <button type="button" class="btn-cta" id="start-match-btn">Iniciar CineMatch</button>
@@ -321,19 +319,19 @@ const moviesList = await fetchRealStreamingProviders();
             <h2 class="round-transition-title">Rodada Concluída!</h2>
             <p class="round-transition-desc" id="transition-instruction-text">Agora passe o dispositivo para o parceiro escolher os filmes.</p>
             
-            <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 320px; align-items: center;" id="turn-transition-actions-container">
-              <button type="button" class="btn-cta" id="next-turn-ready-btn" style="width: 100%; margin-top: 0;">Estou Pronto(a), Começar</button>
+            <div class="turn-transition-actions" id="turn-transition-actions-container">
+              <button type="button" class="btn-cta" id="next-turn-ready-btn">Estou Pronto(a), Começar</button>
               
               <!-- Opções de envio de dados de sincronização -->
-              <div style="margin-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem; width: 100%; display: flex; flex-direction: column; gap: 0.75rem;">
-                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Ou envie para o parceiro:</span>
-                <button type="button" class="btn-secondary" id="nfc-write-btn" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.75rem 1rem; width: 100%; border-radius: 12px;">
+              <div class="sync-divider">
+                <span>Ou envie para o parceiro:</span>
+                 <button type="button" class="btn-secondary btn-block" id="nfc-write-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                   </svg>
                   Gravar em Tag NFC
                 </button>
-                <button type="button" class="btn-secondary" id="link-share-btn" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.75rem 1rem; width: 100%; border-radius: 12px;">
+                 <button type="button" class="btn-secondary btn-block" id="link-share-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
                     <polyline points="16 6 12 2 8 6"/>
@@ -344,7 +342,7 @@ const moviesList = await fetchRealStreamingProviders();
               </div>
             </div>
             
-            <div id="transition-sync-status" style="margin-top: 1rem; font-size: 0.85rem; color: #d946ef; font-weight: 600; display: none;"></div>
+            <div id="transition-sync-status" class="transition-sync-status"></div>
           </div>
         </div>
         
