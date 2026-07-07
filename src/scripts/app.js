@@ -1715,10 +1715,14 @@ function initSplashScreen() {
     const iconOff = document.getElementById("music-icon-off");
 
     if (player && !isMusicPlaying) {
-      player.src = "https://www.youtube.com/embed/e96F_13hW60?autoplay=1&loop=1&playlist=e96F_13hW60";
-      isMusicPlaying = true;
-      if (iconOn) iconOn.style.display = "block";
-      if (iconOff) iconOff.style.display = "none";
+      player.volume = 0.5;
+      player.play().then(() => {
+        isMusicPlaying = true;
+        if (iconOn) iconOn.style.display = "block";
+        if (iconOff) iconOff.style.display = "none";
+      }).catch(err => {
+        console.warn("Autoplay bloqueado pelo navegador:", err);
+      });
     }
   });
 }
@@ -1734,15 +1738,18 @@ function initMusicToggle() {
 
   btn.addEventListener("click", () => {
     if (isMusicPlaying) {
-      player.src = "";
-      iconOn.style.display = "none";
-      iconOff.style.display = "block";
+      player.pause();
+      if (iconOn) iconOn.style.display = "none";
+      if (iconOff) iconOff.style.display = "block";
       isMusicPlaying = false;
     } else {
-      player.src = "https://www.youtube.com/embed/e96F_13hW60?autoplay=1&loop=1&playlist=e96F_13hW60";
-      iconOn.style.display = "block";
-      iconOff.style.display = "none";
-      isMusicPlaying = true;
+      player.play().then(() => {
+        if (iconOn) iconOn.style.display = "block";
+        if (iconOff) iconOff.style.display = "none";
+        isMusicPlaying = true;
+      }).catch(err => {
+        console.warn("Erro ao tocar música:", err);
+      });
     }
   });
 }

@@ -148,8 +148,10 @@ const moviesList = await fetchRealStreamingProviders();
     </nav>
   </header>
 
-  <!-- Hidden Music Player -->
-  <iframe id="bg-music-player" src="" style="display:none;" allow="autoplay"></iframe>
+  <!-- Native HTML5 Audio Player (background music) -->
+  <audio id="bg-music-player" loop preload="none">
+    <source src="/musica.mp3" type="audio/mpeg">
+  </audio>
 
   <!-- Main Viewport -->
   <main>
