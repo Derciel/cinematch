@@ -1715,7 +1715,7 @@ function initSplashScreen() {
     const iconOff = document.getElementById("music-icon-off");
 
     if (player && !isMusicPlaying) {
-      player.src = "https://www.youtube.com/embed/Rk3P1kLp0aE?autoplay=1&loop=1&playlist=Rk3P1kLp0aE";
+      player.src = "https://www.youtube.com/embed/e96F_13hW60?autoplay=1&loop=1&playlist=e96F_13hW60";
       isMusicPlaying = true;
       if (iconOn) iconOn.style.display = "block";
       if (iconOff) iconOff.style.display = "none";
@@ -1739,7 +1739,7 @@ function initMusicToggle() {
       iconOff.style.display = "block";
       isMusicPlaying = false;
     } else {
-      player.src = "https://www.youtube.com/embed/Rk3P1kLp0aE?autoplay=1&loop=1&playlist=Rk3P1kLp0aE";
+      player.src = "https://www.youtube.com/embed/e96F_13hW60?autoplay=1&loop=1&playlist=e96F_13hW60";
       iconOn.style.display = "block";
       iconOff.style.display = "none";
       isMusicPlaying = true;
