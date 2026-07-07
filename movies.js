@@ -14,7 +14,8 @@ const MOVIE_DATABASE = [
     "synopsis": "Uma equipe de exploradores viaja através de um buraco de minhoca no espaço em uma tentativa de garantir a sobrevivência da humanidade em uma Terra agonizante.",
     "platforms": [
       "Prime Video",
-      "Max"
+      "Max",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/6ricSDD83BClJsFdGB6x7cM0MFQ.jpg"
   },
@@ -31,8 +32,8 @@ const MOVIE_DATABASE = [
     "director": "Denis Villeneuve",
     "synopsis": "Uma linguista trabalha com os militares para aprender a se comunicar com formas de vida alienígenas depois que doze naves misteriosas aparecem ao redor do mundo.",
     "platforms": [
-      "Netflix",
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/3rDwbFpn6z5HJUgDjpfhEePx8VI.jpg"
   },
@@ -50,7 +51,7 @@ const MOVIE_DATABASE = [
     "synopsis": "Um novo blade runner, o policial K do LAPD, descobre um segredo há muito enterrado que tem o potencial de mergulhar o que resta da sociedade no caos absoluto.",
     "platforms": [
       "Prime Video",
-      "Netflix"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/49pANIZXRAdHUiWjjBv4vxPeqRC.jpg"
   },
@@ -67,8 +68,9 @@ const MOVIE_DATABASE = [
     "director": "Lana Wachowski, Lilly Wachowski",
     "synopsis": "Quando um belo estranho leva o programador de computador Neo a um submundo proibido, ele descobre a verdade chocante: a vida que ele conhece é uma simulação de IA.",
     "platforms": [
+      "Prime Video",
       "Max",
-      "Prime Video"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/lDqMDI3xpbB9UQRyeXfei0MXhqb.jpg"
   },
@@ -85,7 +87,8 @@ const MOVIE_DATABASE = [
     "director": "Denis Villeneuve",
     "synopsis": "Paul Atreides se une a Chani e aos Fremen em busca de vingança contra os conspiradores que destruíram sua família, enquanto tenta evitar um futuro terrível que só ele prevê.",
     "platforms": [
-      "Max"
+      "Max",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/8LJJjLjAzAwXS40S5mx79PJ2jSs.jpg"
   },
@@ -102,7 +105,7 @@ const MOVIE_DATABASE = [
     "director": "Ridley Scott",
     "synopsis": "Um astronauta fica preso em Marte após ser dado como morto por sua equipe e precisa usar toda sua inteligência e ciência para sobreviver e sinalizar socorro à Terra.",
     "platforms": [
-      "Disney+"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/fG3S4zdgnsaF77tJGK3rA9tHBu4.jpg"
   },
@@ -119,7 +122,8 @@ const MOVIE_DATABASE = [
     "director": "James Ward Byrkit",
     "synopsis": "Coisas terrivelmente bizarras começam a acontecer quando um grupo de amigos se reúne para jantar na mesma noite em que um cometa misterioso passa muito perto da Terra.",
     "platforms": [
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/txGO6noaRTUDf6efsUZrsPIxrmR.jpg"
   },
@@ -137,7 +141,8 @@ const MOVIE_DATABASE = [
     "director": "Daniel Kwan, Daniel Scheinert",
     "synopsis": "Uma dona de lavanderia sobrecarregada é arrastada para uma aventura insana pelo multiverso, onde precisa canalizar os poderes de suas outras versões para salvar a realidade.",
     "platforms": [
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/2dSZQGwijlXvMSyuGe0FSgrXnv0.jpg"
   },
@@ -154,8 +159,8 @@ const MOVIE_DATABASE = [
     "director": "Jordan Peele",
     "synopsis": "Um jovem negro visita a propriedade da família de sua namorada branca. Inicialmente amigáveis, os comportamentos peculiares dos moradores escondem um segredo sombrio.",
     "platforms": [
-      "Netflix",
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/A0RoSZh8PEYJgDMgM2EV7Ycz3dR.jpg"
   },
@@ -172,8 +177,8 @@ const MOVIE_DATABASE = [
     "director": "John Krasinski",
     "synopsis": "Em um mundo pós-apocalíptico assolado por monstros cegos de audição ultra-sensível, uma família luta para sobreviver mantendo silêncio absoluto a qualquer custo.",
     "platforms": [
-      "Netflix",
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/jk1LYcbiuUr0tv37cVcmp4u9KcN.jpg"
   },
@@ -190,8 +195,8 @@ const MOVIE_DATABASE = [
     "director": "Ari Aster",
     "synopsis": "Após a morte da avó matriarca, a família Graham começa a ser assombrada por acontecimentos bizarros e desvenda segredos terríveis de sua árvore genealógica.",
     "platforms": [
-      "Netflix",
-      "Max"
+      "Max",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/wonYMeHauhrxSi5UTOtj5L479mS.jpg"
   },
@@ -208,7 +213,8 @@ const MOVIE_DATABASE = [
     "director": "Danny Philippou, Michael Philippou",
     "synopsis": "Um grupo de adolescentes descobre que pode falar com os mortos usando uma misteriosa mão embalsamada. A brincadeira vira um pesadelo quando quebram a principal regra.",
     "platforms": [
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/7U3lC4YnHD8zpeoxbY6Hsj9jyeu.jpg"
   },
@@ -225,8 +231,9 @@ const MOVIE_DATABASE = [
     "director": "James Wan",
     "synopsis": "Os renomados demonologistas Ed e Lorraine Warren são chamados para ajudar uma família atormentada por uma entidade satânica extremamente agressiva em sua nova fazenda.",
     "platforms": [
+      "Prime Video",
       "Max",
-      "Prime Video"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/1NxHKZW5DPbUFtbF3MxbdSyxRqU.jpg"
   },
@@ -244,7 +251,8 @@ const MOVIE_DATABASE = [
     "director": "Leigh Whannell",
     "synopsis": "Após fugir de um relacionamento abusivo e receber a notícia do suicídio do ex, Cecilia começa a sentir que está sendo vigiada e caçada por alguém que ninguém consegue ver.",
     "platforms": [
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/yBuFgcE4bJlc20h7vblF1bW4dW4.jpg"
   },
@@ -262,7 +270,7 @@ const MOVIE_DATABASE = [
     "synopsis": "Na Nova Inglaterra de 1630, uma família puritana expulsa de sua comunidade se estabelece à beira de uma floresta escura, onde forças sobrenaturais e paranoia começam a consumi-los.",
     "platforms": [
       "Prime Video",
-      "Netflix"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/yGtYuBzEkGGoUbM9zRpadoDN6KD.jpg"
   },
@@ -279,7 +287,8 @@ const MOVIE_DATABASE = [
     "director": "Ari Aster",
     "synopsis": "Um casal em crise viaja com amigos para uma comunidade isolada na Suécia para um festival de solstício de verão. A viagem idílica logo se transforma em um bizarro ritual pagão.",
     "platforms": [
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/hR4dXPlWq5Nekwjqbp3gFGeiiZS.jpg"
   },
@@ -297,8 +306,9 @@ const MOVIE_DATABASE = [
     "director": "George Miller",
     "synopsis": "Em um futuro pós-apocalíptico desértico, o andarilho Max une forças com a Imperatriz Furiosa e um grupo de prisioneiras em uma fuga desesperada de um cruel senhor da guerra.",
     "platforms": [
+      "Prime Video",
       "Max",
-      "Prime Video"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/tH64gzAHDFg7EFcgfkkZyHdGM5P.jpg"
   },
@@ -316,7 +326,8 @@ const MOVIE_DATABASE = [
     "director": "Christopher Nolan",
     "synopsis": "Com a ajuda de Jim Gordon e Harvey Dent, Batman mantém o crime sob controle em Gotham. No entanto, a chegada do Coringa instaura uma onda de anarquia sem precedentes.",
     "platforms": [
-      "Max"
+      "Max",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/4lj1ikfsSmMZNyfdi8R8Tv5tsgb.jpg"
   },
@@ -333,7 +344,8 @@ const MOVIE_DATABASE = [
     "director": "Chad Stahelski",
     "synopsis": "John Wick descobre um caminho para derrotar a Alta Cúpula e recuperar sua liberdade. Mas a recompensa por sua cabeça aumenta, forçando-o a lutar contra aliados mundiais.",
     "platforms": [
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/rXTqhpkpj6E0YilQ49PK1SSqLhm.jpg"
   },
@@ -350,8 +362,8 @@ const MOVIE_DATABASE = [
     "director": "Joseph Kosinski",
     "synopsis": "Após décadas de serviço, o piloto de testes Pete 'Maverick' Mitchell é convocado para treinar um destacamento de pilotos graduados da Top Gun para uma missão suicida especializada.",
     "platforms": [
-      "Netflix",
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/kPbuLGVSJHATkW9fX9L3h1wM0Pa.jpg"
   },
@@ -369,8 +381,8 @@ const MOVIE_DATABASE = [
     "director": "Bob Persichetti, Peter Ramsey, Rodney Rothman",
     "synopsis": "O jovem Miles Morales é picado por uma aranha radioativa e assume o manto do Homem-Aranha. Ele logo descobre que a colisão de universos trouxe outras cinco versões do herói.",
     "platforms": [
-      "Disney+",
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/gte2cJ3mtc2I8hZyXwRTzyclKuC.jpg"
   },
@@ -388,8 +400,8 @@ const MOVIE_DATABASE = [
     "director": "Edgar Wright",
     "synopsis": "Baby, um jovem piloto de fuga talentoso que depende do ritmo de sua trilha sonora pessoal para ser o melhor, é forçado a participar de um assalto fadado ao fracasso.",
     "platforms": [
-      "Netflix",
-      "Prime Video"
+      "Prime Video",
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/1rYTtQ14rPB3KOgk5TjkUqiQFch.jpg"
   },
@@ -407,7 +419,7 @@ const MOVIE_DATABASE = [
     "synopsis": "Ethan Hunt e a equipe do IMF embarcam em sua missão mais perigosa: rastrear uma inteligência artificial rebelde e devastadora antes que caia nas mãos erradas.",
     "platforms": [
       "Prime Video",
-      "Netflix"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/hBKxN5Z8gRo2am0whMeQlPv19K4.jpg"
   },
@@ -426,7 +438,7 @@ const MOVIE_DATABASE = [
     "synopsis": "Um general romano traído pelo filho do imperador, que assassinou sua família, busca vingança tornando-se um gladiador implacável nas arenas sangrentas de Roma.",
     "platforms": [
       "Prime Video",
-      "Netflix"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/4DUClyGA6OqjXv6yC0Imf6THGfp.jpg"
   },
@@ -443,8 +455,9 @@ const MOVIE_DATABASE = [
     "director": "Peter Jackson",
     "synopsis": "Um jovem hobbit herda um anel incrivelmente poderoso e, acompanhado por um mago, elfos, anões e homens, inicia uma jornada épica para destruí-lo na Montanha da Perdição.",
     "platforms": [
+      "Prime Video",
       "Max",
-      "Prime Video"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/tlvsNCwWEIgwAM23aNzTmMIcPEZ.jpg"
   },
@@ -462,7 +475,7 @@ const MOVIE_DATABASE = [
     "director": "James Cameron",
     "synopsis": "Jake Sully e Ney'tiri criaram uma família em Pandora, mas uma antiga ameaça ressurge, forçando-os a fugir e buscar refúgio com as tribos aquáticas do oceano.",
     "platforms": [
-      "Disney+"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/hm6nONQOgVpKmRK5YUX9EqfJ0NH.jpg"
   },
@@ -480,7 +493,7 @@ const MOVIE_DATABASE = [
     "director": "Hayao Miyazaki",
     "synopsis": "Durante a mudança de sua família, a jovem Chihiro de 10 anos entra acidentalmente em um mundo espiritual governado por uma bruxa, onde seus pais são transformados em porcos.",
     "platforms": [
-      "Netflix"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/ivHwYw3b03dFqRkcqaDSxjj2LQT.jpg"
   },
@@ -497,7 +510,7 @@ const MOVIE_DATABASE = [
     "director": "Steven Spielberg",
     "synopsis": "Em 1936, o arqueólogo e aventureiro de chapéu e chicote Indiana Jones corre contra agentes nazistas para encontrar a lendária Arca da Aliança, que possui poderes bíblicos.",
     "platforms": [
-      "Disney+"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/mtf7iKZRdsL6qbbCnd2TAxOfJYg.jpg"
   },
@@ -515,7 +528,7 @@ const MOVIE_DATABASE = [
     "synopsis": "Um paleontólogo e seus convidados visitam um novo parque temático de dinossauros clonados, mas o caos se instala quando um sabotador sabota os sistemas de segurança do local.",
     "platforms": [
       "Prime Video",
-      "Netflix"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/mgjJ7FH4V3exsmoHwXrmsUhn0h1.jpg"
   },
@@ -533,7 +546,7 @@ const MOVIE_DATABASE = [
     "director": "Gore Verbinski",
     "synopsis": "O ferreiro Will Turner une forças com o excêntrico capitão pirata Jack Sparrow para resgatar sua amada sequestrada pela tripulação maldita de piratas fantasmas.",
     "platforms": [
-      "Disney+"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/9Xcg7Ar4ketv4rl8yeK32yp9zQA.jpg"
   },
@@ -552,7 +565,7 @@ const MOVIE_DATABASE = [
     "synopsis": "Um bardo charmoso e um grupo de aventureiros improváveis planejam um assalto épico para recuperar uma relíquia perdida e salvar sua filha das mãos de um mago maligno.",
     "platforms": [
       "Prime Video",
-      "Netflix"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/tt23D7Mkg0dHhsWn3aN0hbslaFw.jpg"
   },
@@ -570,7 +583,7 @@ const MOVIE_DATABASE = [
     "director": "Pete Docter, Bob Peterson",
     "synopsis": "Um viúvo idoso realiza o sonho de sua vida de flutuar sua casa para a América do Sul com milhares de balões, mas acidentalmente leva consigo um tagarela escoteiro de 8 anos.",
     "platforms": [
-      "Disney+"
+      "On-Demand"
     ],
     "poster": "https://media.themoviedb.org/t/p/w500/oo5gvGDIiPwbXc3R0snZIuOc517.jpg"
   }
