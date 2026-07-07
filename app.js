@@ -57,6 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initWinesScreen();
   updateAnniversaryCounter();
   initSplashScreen();
+  
+  // Atualizar o contador com precisão de segundos a cada 1 segundo
+  setInterval(updateAnniversaryCounter, 1000);
 });
 
 // ==================== NAV E TELAS ====================
@@ -1409,60 +1412,84 @@ function updateAnniversaryCounter() {
   const counterEl = document.getElementById("time-together-counter");
   if (!counterEl) return;
 
-  // IMPORTANTE: Defina abaixo o ano correto em que vocês se conheceram (ex: 2026, 2025, 2024...)
+  // IMPORTANTE: Defina abaixo a data e horário exatos em que vocês se conheceram
   const startYear = 2026; 
-  const startDate = new Date(startYear, 4, 9); // 9 de Maio (Mês 4 em JS, já que Janeiro é 0)
+  const startDate = new Date(startYear, 4, 9, 0, 0, 0); // 9 de Maio de 2026 às 00:00:00 (Mês 4 em JS)
   const now = new Date();
 
+  // Calcular diferença bruta em anos, meses e dias
   let years = now.getFullYear() - startDate.getFullYear();
   let months = now.getMonth() - startDate.getMonth();
   let days = now.getDate() - startDate.getDate();
+  let hours = now.getHours() - startDate.getHours();
+  let minutes = now.getMinutes() - startDate.getMinutes();
+  let seconds = now.getSeconds() - startDate.getSeconds();
 
-  // Ajustar se o dia atual for menor que o dia de início do namoro
+  // Ajustes de tempo de trás para frente (segundos -> minutos -> horas -> dias -> meses)
+  if (seconds < 0) {
+    seconds += 60;
+    minutes--;
+  }
+  if (minutes < 0) {
+    minutes += 60;
+    hours--;
+  }
+  if (hours < 0) {
+    hours += 24;
+    days--;
+  }
   if (days < 0) {
     const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
     days += prevMonthLastDay;
     // Removido months-- para adequar à contagem humana do casal (quase 3 meses)
   }
-
-  // Ajustar se o mês atual for menor que o mês de início do namoro
   if (months < 0) {
     months += 12;
     years--;
   }
 
-  // Formatar o texto de forma humanizada e elegante
-  let timeString = [];
+  // 1. Versão compacta para o banner da página de Setup (sem sobrecarregar o espaço)
+  let compactParts = [];
+  if (years > 0) compactParts.push(`${years} ${years === 1 ? 'ano' : 'anos'}`);
+  if (months > 0) compactParts.push(`${months} ${months === 1 ? 'mês' : 'meses'}`);
+  if (days > 0 || compactParts.length === 0) compactParts.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
+  
+  let compactTime = compactParts.length === 2 ? compactParts.join(" e ") : compactParts.join(", ");
+  counterEl.textContent = `Nos conhecemos há ${compactTime} • Desde 09/05/${startYear}`;
+
+  // 2. Versão completa em tempo real para o Splash Screen (anos, meses, dias, horas, minutos e segundos)
+  let fullParts = [];
   if (years > 0) {
-    timeString.push(`${years} ${years === 1 ? 'ano' : 'anos'}`);
+    fullParts.push(`${years} ${years === 1 ? 'ano' : 'anos'}`);
   }
   if (months > 0) {
-    timeString.push(`${months} ${months === 1 ? 'mês' : 'meses'}`);
+    fullParts.push(`${months} ${months === 1 ? 'mês' : 'meses'}`);
   }
-  if (days > 0 || timeString.length === 0) {
-    timeString.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
+  if (days > 0) {
+    fullParts.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
   }
+  
+  fullParts.push(`${hours} ${hours === 1 ? 'hora' : 'horas'}`);
+  fullParts.push(`${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`);
+  fullParts.push(`${seconds} ${seconds === 1 ? 'segundo' : 'segundos'}`);
 
-  let formattedTime = "";
-  if (timeString.length === 3) {
-    formattedTime = `${timeString[0]}, ${timeString[1]} e ${timeString[2]}`;
-  } else if (timeString.length === 2) {
-    formattedTime = `${timeString[0]} e ${timeString[1]}`;
+  let fullTime = "";
+  if (fullParts.length > 1) {
+    const lastPart = fullParts.pop();
+    fullTime = fullParts.join(", ") + " e " + lastPart;
   } else {
-    formattedTime = timeString[0];
+    fullTime = fullParts[0];
   }
-
-  counterEl.textContent = `Nos conhecemos há ${formattedTime} • Desde 09/05/${startYear}`;
 
   // Atualizar o contador no Splash Screen
   const splashCounterEl = document.getElementById("splash-time-counter");
   if (splashCounterEl) {
-    splashCounterEl.textContent = formattedTime;
+    splashCounterEl.textContent = fullTime;
   }
 
   // Atualizar os nomes no Splash Screen com dados do localStorage ou padrões
-  const partnerAName = localStorage.getItem("partnerA") || "Dercio";
-  const partnerBName = localStorage.getItem("partnerB") || "Parceira";
+  const partnerAName = localStorage.getItem("partnerA") || "Derci";
+  const partnerBName = localStorage.getItem("partnerB") || "Isa";
   const splashCoupleNames = document.getElementById("splash-couple-names");
   if (splashCoupleNames) {
     splashCoupleNames.textContent = `${partnerAName} & ${partnerBName}`;
