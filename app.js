@@ -1408,8 +1408,8 @@ function updateAnniversaryCounter() {
   const counterEl = document.getElementById("time-together-counter");
   if (!counterEl) return;
 
-  // IMPORTANTE: Defina abaixo o ano correto em que vocês começaram a namorar (ex: 2024, 2023, 2022...)
-  const startYear = 2024; 
+  // IMPORTANTE: Defina abaixo o ano correto em que vocês se conheceram (ex: 2026, 2025, 2024...)
+  const startYear = 2026; 
   const startDate = new Date(startYear, 4, 9); // 9 de Maio (Mês 4 em JS, já que Janeiro é 0)
   const now = new Date();
 
@@ -1451,5 +1451,5 @@ function updateAnniversaryCounter() {
     formattedTime = timeString[0];
   }
 
-  counterEl.textContent = `Juntos há ${formattedTime} • Desde 09/05/${startYear}`;
+  counterEl.textContent = `Nos conhecemos há ${formattedTime} • Desde 09/05/${startYear}`;
 }
