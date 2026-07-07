@@ -127,17 +127,16 @@ const moviesList = await fetchRealStreamingProviders();
       </svg>
       <span>CineMatch</span>
     </div>
-    
+
     <nav style="display: flex; align-items: center; gap: 1rem;">
-      <ul class="nav-links" id="nav-menu" style="display: none;">
+      <ul class="nav-links" id="nav-menu">
         <li><a class="nav-link active" data-screen="play-screen">Jogar</a></li>
         <li><a class="nav-link" data-screen="history-screen">Matches</a></li>
         <li><a class="nav-link" data-screen="diary-screen">Memórias</a></li>
         <li><a class="nav-link" data-screen="ideas-screen">Ideias de Encontros</a></li>
         <li><a class="nav-link" data-screen="wines-screen">Vinhos</a></li>
       </ul>
-      
-      <!-- Botão de controle da música de fundo -->
+
       <button type="button" id="btn-toggle-music" style="padding: 0.5rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: pointer; transition: var(--transition-fast);" title="Música de fundo">
         <svg id="music-icon-on" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
