@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initKeyboardShortcuts();
   initNFCSync();
   initWinesScreen();
+  updateAnniversaryCounter();
 });
 
 // ==================== NAV E TELAS ====================
@@ -1399,4 +1400,56 @@ function renderWinePairing(key) {
     card.style.opacity = "1";
     card.style.transform = "scale(1)";
   }, 150);
+}
+
+// ==================== CONTADOR DE ANIVERSÁRIO ====================
+
+function updateAnniversaryCounter() {
+  const counterEl = document.getElementById("time-together-counter");
+  if (!counterEl) return;
+
+  // IMPORTANTE: Defina abaixo o ano correto em que vocês começaram a namorar (ex: 2024, 2023, 2022...)
+  const startYear = 2024; 
+  const startDate = new Date(startYear, 4, 9); // 9 de Maio (Mês 4 em JS, já que Janeiro é 0)
+  const now = new Date();
+
+  let years = now.getFullYear() - startDate.getFullYear();
+  let months = now.getMonth() - startDate.getMonth();
+  let days = now.getDate() - startDate.getDate();
+
+  // Ajustar se o dia atual for menor que o dia de início do namoro
+  if (days < 0) {
+    const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+    days += prevMonthLastDay;
+    months--;
+  }
+
+  // Ajustar se o mês atual for menor que o mês de início do namoro
+  if (months < 0) {
+    months += 12;
+    years--;
+  }
+
+  // Formatar o texto de forma humanizada e elegante
+  let timeString = [];
+  if (years > 0) {
+    timeString.push(`${years} ${years === 1 ? 'ano' : 'anos'}`);
+  }
+  if (months > 0) {
+    timeString.push(`${months} ${months === 1 ? 'mês' : 'meses'}`);
+  }
+  if (days > 0 || timeString.length === 0) {
+    timeString.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
+  }
+
+  let formattedTime = "";
+  if (timeString.length === 3) {
+    formattedTime = `${timeString[0]}, ${timeString[1]} e ${timeString[2]}`;
+  } else if (timeString.length === 2) {
+    formattedTime = `${timeString[0]} e ${timeString[1]}`;
+  } else {
+    formattedTime = timeString[0];
+  }
+
+  counterEl.textContent = `Juntos há ${formattedTime} • Desde 09/05/${startYear}`;
 }

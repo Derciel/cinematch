@@ -47,6 +47,21 @@
         <h1 class="setup-title">Encontre o filme perfeito.</h1>
         <p class="setup-subtitle">Sem discussões, sem rolar catálogos infinitos. Apenas deem likes e assistam.</p>
         
+        <!-- Banner do Casal (Fotos e Contador de Tempo Juntos) -->
+        <div class="couple-banner glass" style="margin-top: 1.5rem; margin-bottom: 2rem; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; border: 1.5px solid rgba(217, 70, 239, 0.15); background: linear-gradient(135deg, rgba(217, 70, 239, 0.04), rgba(139, 92, 246, 0.04));">
+          <div style="display: flex; align-items: center; gap: 1.25rem; min-width: 0;">
+            <div class="couple-photos" style="display: flex; position: relative; width: 75px; height: 45px; flex-shrink: 0;">
+              <img src="foto1.jpg" alt="Parceiro A" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); position: absolute; left: 0; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=100&auto=format&fit=crop'">
+              <img src="foto2.jpg" alt="Parceiro B" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary); position: absolute; left: 25px; z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" onerror="this.src='https://images.unsplash.com/photo-1511988617509-a57c8a288659?q=80&w=100&auto=format&fit=crop'">
+            </div>
+            <div style="text-align: left; min-width: 0;">
+              <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.15rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Nosso Tempo Juntos</h3>
+              <p id="time-together-counter" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Carregando amor...</p>
+            </div>
+          </div>
+          <span style="font-size: 1.3rem; filter: drop-shadow(0 2px 4px rgba(217, 70, 239, 0.4)); animation: pulseHeart 1.5s infinite ease-in-out;">❤️</span>
+        </div>
+        
         <form id="setup-form" onsubmit="event.preventDefault();">
           
           <!-- Partners Names -->
