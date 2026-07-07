@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initNFCSync();
   initWinesScreen();
   updateAnniversaryCounter();
+  initSplashScreen();
 });
 
 // ==================== NAV E TELAS ====================
@@ -1452,4 +1453,30 @@ function updateAnniversaryCounter() {
   }
 
   counterEl.textContent = `Nos conhecemos há ${formattedTime} • Desde 09/05/${startYear}`;
+
+  // Atualizar o contador no Splash Screen
+  const splashCounterEl = document.getElementById("splash-time-counter");
+  if (splashCounterEl) {
+    splashCounterEl.textContent = formattedTime;
+  }
+
+  // Atualizar os nomes no Splash Screen com dados do localStorage ou padrões
+  const partnerAName = localStorage.getItem("partnerA") || "Dercio";
+  const partnerBName = localStorage.getItem("partnerB") || "Parceira";
+  const splashCoupleNames = document.getElementById("splash-couple-names");
+  if (splashCoupleNames) {
+    splashCoupleNames.textContent = `${partnerAName} & ${partnerBName}`;
+  }
+}
+
+// Inicializar e configurar a tela de Splash Romântico
+function initSplashScreen() {
+  const btn = document.getElementById("btn-enter-app");
+  const splash = document.getElementById("romantic-splash");
+  if (!btn || !splash) return;
+
+  btn.addEventListener("click", () => {
+    // Transição suave de fade-out
+    splash.classList.add("fade-out");
+  });
 }

@@ -8,6 +8,37 @@
 </head>
 <body>
 
+  <!-- 0. ROMANTIC SPLASH SCREEN -->
+  <div id="romantic-splash" class="splash-overlay">
+    <div class="splash-content glass">
+      <!-- Floating decorative hearts -->
+      <div class="floating-heart" style="top: 10%; left: 10%; font-size: 1.5rem; animation-delay: 0s;">💖</div>
+      <div class="floating-heart" style="top: 20%; left: 85%; font-size: 2rem; animation-delay: 1.5s;">❤️</div>
+      <div class="floating-heart" style="top: 75%; left: 12%; font-size: 1.8rem; animation-delay: 0.8s;">💘</div>
+      <div class="floating-heart" style="top: 80%; left: 80%; font-size: 1.4rem; animation-delay: 2.2s;">✨</div>
+
+      <!-- Couple Photo frame -->
+      <div class="splash-couple-photos">
+        <img src="foto1.jpg" alt="Parceiro A" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=150&auto=format&fit=crop'">
+        <div class="splash-heart-badge">❤️</div>
+        <img src="foto2.jpg" alt="Parceiro B" onerror="this.src='https://images.unsplash.com/photo-1511988617509-a57c8a288659?q=80&w=150&auto=format&fit=crop'">
+      </div>
+
+      <h1 class="splash-title">CineMatch</h1>
+      <p class="splash-names" id="splash-couple-names">Dercio & Parceira</p>
+      
+      <div class="splash-counter-box">
+        <span class="splash-counter-label">Tempo que nos conhecemos</span>
+        <h2 id="splash-time-counter" class="splash-counter-value">Carregando amor...</h2>
+        <span class="splash-date-badge">Desde 09/05/2026</span>
+      </div>
+
+      <button type="button" id="btn-enter-app" class="btn-primary btn-glowing" style="padding: 0.85rem 2rem; border-radius: 99px; margin-top: 0.5rem; font-size: 0.95rem; font-weight: 700;">
+        Escolher Nosso Filme ❤️
+      </button>
+    </div>
+  </div>
+
   <!-- SVG Gradient Definitions -->
   <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
     <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
