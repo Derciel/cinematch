@@ -117,6 +117,7 @@ header {
 
 .nav-links {
   display: flex;
+  min-width: 0;
   gap: 0.5rem;
   list-style: none;
   overflow-x: auto;

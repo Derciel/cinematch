@@ -1653,11 +1653,18 @@ function updateAnniversaryCounter() {
     years--;
   }
 
+  let displayMonths = months;
+  let displayDays = days;
+  if (displayDays >= 28) {
+    displayMonths++;
+    displayDays = 0;
+  }
+
   // 1. Versão compacta para o banner da página de Setup
   let compactParts = [];
   if (years > 0) compactParts.push(`${years} ${years === 1 ? 'ano' : 'anos'}`);
-  if (months > 0) compactParts.push(`${months} ${months === 1 ? 'mês' : 'meses'}`);
-  if (days > 0 || compactParts.length === 0) compactParts.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
+  if (displayMonths > 0) compactParts.push(`${displayMonths} ${displayMonths === 1 ? 'mês' : 'meses'}`);
+  if (displayDays > 0 || compactParts.length === 0) compactParts.push(`${displayDays} ${displayDays === 1 ? 'dia' : 'dias'}`);
   
   let compactTime = compactParts.length === 2 ? compactParts.join(" e ") : compactParts.join(", ");
   counterEl.textContent = `Nos conhecemos há ${compactTime} • Desde 09/04/${startYear}`;
@@ -1667,11 +1674,11 @@ function updateAnniversaryCounter() {
   if (years > 0) {
     fullParts.push(`${years} ${years === 1 ? 'ano' : 'anos'}`);
   }
-  if (months > 0) {
-    fullParts.push(`${months} ${months === 1 ? 'mês' : 'meses'}`);
+  if (displayMonths > 0) {
+    fullParts.push(`${displayMonths} ${displayMonths === 1 ? 'mês' : 'meses'}`);
   }
-  if (days > 0) {
-    fullParts.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
+  if (displayDays > 0) {
+    fullParts.push(`${displayDays} ${displayDays === 1 ? 'dia' : 'dias'}`);
   }
   
   fullParts.push(`${hours} ${hours === 1 ? 'hora' : 'horas'}`);
